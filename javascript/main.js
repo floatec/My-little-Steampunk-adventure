@@ -21,9 +21,11 @@ function Player(position) {
 
 	//State variables
 	this.speed = 200;
+	this.velocity = 0;
 	this.xDir = 0;
+	this.isAtGround = false;
 	this.isJumping = false;
-	this.jumpTime = 0;
+	//this.jumpTime = 0;
 	
 	this.handle = function(event) {
 		if (event.type === gamejs.event.KEY_DOWN) {
@@ -33,9 +35,8 @@ function Player(position) {
 			if (event.key === gamejs.event.K_d && this.xDir == 0) {
 				this.xDir = 1;
 			}
-			if (event.key === gamejs.event.K_w && !this.isJumping) {
-				this.isJumping = true;
-				this.jumpTime = 0;
+			if (event.key === gamejs.event.K_w && this.isAtGround) {
+				this.velocity = -15;
 			}
 		}
 		else if (event.type === gamejs.event.KEY_UP) {
@@ -48,22 +49,21 @@ function Player(position) {
 	
 	this.update = function(dt) {
 	
+		this.isAtGround = !map.canMove(this, 0, 1);
+	
 		//Calculate new X
-		var x = this.xDir * 4;
-		map.tryMove(this, x, 0);
+		var x = this.xDir * this.speed * dt;
+		map.move(this, x, 0);
 		
 		//Calculate new Y
-		if (this.isJumping) {
-			map.tryMove(this, 0, -4);
-			this.jumpTime += dt;
-			
-			if (this.jumpTime >= JUMP_LENGHT) {
-				this.isJumping = false;
-			}
+		if (!this.isAtGround) {
+			this.velocity += 2;
 		}
-		else {
-			map.tryMove(this, 0, GRAVITY);
+		else if (this.velocity > 0) {
+			this.velocity = 0;
 		}
+		
+		map.move(this, 0, this.velocity);
 	};
 };
 gamejs.utils.objects.extend(Player, gamejs.sprite.Sprite);
