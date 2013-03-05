@@ -56,8 +56,8 @@ function main() {
     var display = gamejs.display.setMode([SCREEN_WIDTH, SCREEN_HEIGHT]);
 	
 	//Initialize variables
-	map = new view.Map('./data/map.tmx');
-	var player = new Player([96, 64]);
+	map = new view.Map('./data/testlevel.tmx');
+	var player = new Player([96, 48]);
 	
 	//The gameloop
 	function gameTick(gameTime) {
