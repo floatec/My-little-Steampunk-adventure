@@ -1,14 +1,240 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="100" height="6" tilewidth="32" tileheight="32">
- <tileset firstgid="1" name="hero" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="400" height="18" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="char" tilewidth="32" tileheight="32">
   <image source="hero.png" width="224" height="32"/>
  </tileset>
- <tileset firstgid="8" name="tiles" tilewidth="32" tileheight="32">
-  <image source="tiles.png" width="320" height="32"/>
+ <tileset firstgid="8" name="tiles" tilewidth="16" tileheight="16">
+  <image source="tiles.png" width="672" height="48"/>
+  <tile id="0">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="9">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="12">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="14">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="15">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="16">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="17">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="18">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="19">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="20">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="24">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="29">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="36">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="37">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="38">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="43">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="44">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="45">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="46">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="48">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="49">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="50">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="72">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="73">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="74">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="78">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="79">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="82">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="83">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="84">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="85">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="86">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="105">
+   <properties>
+    <property name="kill" value=""/>
+   </properties>
+  </tile>
+  <tile id="106">
+   <properties>
+    <property name="kill" value=""/>
+   </properties>
+  </tile>
+  <tile id="107">
+   <properties>
+    <property name="kill" value=""/>
+   </properties>
+  </tile>
+  <tile id="120">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="121">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="122">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
  </tileset>
- <layer name="Kachelebene 1" width="100" height="6">
+ <layer name="Kachelebene 1" width="400" height="18">
   <data encoding="base64" compression="zlib">
-   eJzjY2Bg4CMS80IxOp8Xi9pRQHsACnd+JD4/Eh4FtAMsaHwuIOZhQKR9ASAWROKD5Ljp6cARBjiR2LC44MGjHiY/GifUAcxIbFj4w8KWEw1jAzwMo3FCLcBBIzwKyAMAEFgDeA==
+   eJzt28tOFEEYhuFZCnI+LQauQgVBOS3Qq+CgCIosgPtf8S0rnXSnkwl0avp5kjepRVVltvWnZzqZTHbTXpq+0/ot7gZgvmyl7bQz9A8BoCqn6SydD/w7AKjLQ/qfHjv2tM2kvF0AxqvP++Mi/Ug/G2tvF4Dx6vP+eErP6aWx7nMWgPk0ywzK/ApgvGaZQZlfAYzXLDMo8yuA8SpnUG3/91tJq2mtsd/8CmC8yhlU+W1V6TAdpW+N/eZXAONVzqDKb6tKt+lPumvsN78CqFvbfGk9baTNjrMf01Ja7nlnufb+AKhb23zpezpOJx1n99NB+trzznLt/QFQt7b50n36m/51nL1Jv9LvnneaXwHU4UNaSIuVrgEYxqf0OX2pdA3AMC7TVbqudA3AMF4BZzFOkw==
   </data>
  </layer>
+ <objectgroup name="Objektebene 1" width="400" height="18"/>
 </map>
