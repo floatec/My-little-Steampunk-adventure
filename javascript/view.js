@@ -62,7 +62,7 @@ var Map = exports.Map = function(url) {
 		
 	this.getTileProperty = function(pos, property) {
 	
-		var id = this.getTileId(pos);	
+		var id = this.getTileId(pos);
 		var properties = map.tiles.getProperties(id);
 
 		for (p in properties) {
@@ -100,16 +100,48 @@ var Map = exports.Map = function(url) {
 	};
 	
 	this.tryMove = function(sprite, x, y) {
+	
+		if (x != 0)  {
+
+			if (this.canMove(sprite, x, 0)) {
+				sprite.rect.moveIp(x, 0);
+			}
+			else {
+				//TODO
+			}
+		}
+		
+		if (y != 0)  {
+		
+			if (this.canMove(sprite, 0, y)) {
+				sprite.rect.moveIp(0, y);
+			}
+			else if (sprite.rect.bottom % map.tileHeight != 0) {
+				y = this.getTileIndex(sprite.rect.bottomleft)[1] * map.tileHeight;
+				sprite.rect.bottom = y + 16;
+			}
+		}
+	}
+	
+	this.move = function(sprite, x, y) {
+	
+		var step = 16;
 		
 		//X-axis
-		if (this.canMove(sprite, x, 0)) {
-			sprite.rect.moveIp(x, 0);
+		while(Math.abs(x) > step) {
+		
+			this.tryMove(sprite, 0, step);
+			x > 0 ? x -= step : x += step;
 		}
+		this.tryMove(sprite, x, 0);
 		
 		//Y-axis
-		if (this.canMove(sprite, 0, y)) {
-			sprite.rect.moveIp(0, y);
+		while(Math.abs(y) > step) {
+		
+			this.tryMove(sprite, 0, step);
+			y > 0 ? y -= step : y += step;
 		}
+		this.tryMove(sprite, 0, y);
 	}
 
    return this;
