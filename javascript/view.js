@@ -93,30 +93,12 @@ var Map = exports.Map = function(url) {
 	};
 	
 	this.canMove = function(sprite, x, y) {
-	
-		var newPos = sprite.rect.clone();
-		newPos.moveIp([x, y]);
-		
-		//Collisioncheck at eight points
-		var topleft = newPos.topleft;
-		var topright = newPos.right % map.tileWidth == 0 ? [newPos.right - 1, newPos.top] : newPos.topright;
-		var bottomleft = newPos.bottom % map.tileHeight == 0 ? [newPos.left, newPos.bottom - 1] : newPos.bottomleft;
-		
-		var brx = newPos.right % map.tileWidth == 0 ? newPos.right - 1 : newPos.right;
-		var bry  = newPos.bottom % map.tileHeight == 0 ? newPos.bottom - 1 : newPos.bottom;	
-		var bottomright = [brx, bry];
-		
-		var topmiddle = [(topleft[0] + topright[0]) / 2, topleft[1]];
-		var bottommiddle = [(bottomleft[0] + bottomright[0]) / 2, bottomleft[1]];
-		var middleleft = [topleft[0], (topleft[1] + bottomleft[1]) / 2]; 
-		var middleright = [topright[0], (topright[1] + bottomright[1]) / 2];
-		
-		return !this.getTileProperty(topleft, "collide") && !this.getTileProperty(topmiddle, "collide") 
-			&& !this.getTileProperty(topright, "collide") && !this.getTileProperty(middleleft, "collide") 
-			&& !this.getTileProperty(middleright, "collide") && !this.getTileProperty(bottomleft, "collide") 
-			&& !this.getTileProperty(bottommiddle, "collide") && !this.getTileProperty(bottomright, "collide") ;
-	};
+	    return !this.hitsObjectwithProperty(sprite,x,y,"collide");
+    };
     this.hitsKillingObject = function(sprite, x, y) {
+        return this.hitsObjectwithProperty(sprite,x,y,"kill");
+    };
+    this.hitsObjectwithProperty = function(sprite, x, y,property) {
 
         var newPos = sprite.rect.clone();
         newPos.moveIp([x, y]);
@@ -135,10 +117,10 @@ var Map = exports.Map = function(url) {
         var middleleft = [topleft[0], (topleft[1] + bottomleft[1]) / 2];
         var middleright = [topright[0], (topright[1] + bottomright[1]) / 2];
 
-        return !this.getTileProperty(topleft, "kill") && !this.getTileProperty(topmiddle, "kill")
-            && !this.getTileProperty(topright, "kill") && !this.getTileProperty(middleleft, "kill")
-            && !this.getTileProperty(middleright, "kill") && !this.getTileProperty(bottomleft, "kill")
-            && !this.getTileProperty(bottommiddle, "kill") && !this.getTileProperty(bottomright, "kill") ;
+        return !(!this.getTileProperty(topleft, property) && !this.getTileProperty(topmiddle, property)
+            && !this.getTileProperty(topright, property) && !this.getTileProperty(middleleft, property)
+            && !this.getTileProperty(middleright, property) && !this.getTileProperty(bottomleft, property)
+            && !this.getTileProperty(bottommiddle, property) && !this.getTileProperty(bottomright, property)) ;
     };
 	
 	this.tryMove = function(sprite, x, y) {
