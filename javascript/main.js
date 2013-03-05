@@ -118,6 +118,7 @@ function Player(position) {
 	
 	this.update = function(dt) {
 	
+		//Collide with ground
 		this.isAtGround = !map.canMove(this, 0, 1);
 	
 		//Calculate new X
@@ -127,13 +128,17 @@ function Player(position) {
 		//Calculate new Y
 		if (!this.isAtGround) {
 			this.velocity += GRAVITY;
+			
+			//Collide with ceiling
+			if (this.velocity < 0 && !map.canMove(this, 0, -1)) {
+				this.velocity = 0;
+			}
 		}
 		else if (this.velocity > 0) {
 			this.velocity = 0;
 		}
 
         this.image = gamejs.image.load('./data/player'+this.dir+this.item+'.png');
-
 		
 		map.move(this, 0, this.velocity);
 	};
@@ -171,24 +176,21 @@ function main() {
 		
 		//Update world
 		player.update(dt)
-		map.update(dt);
+		map.update(dt, player);
 	}
 	
 	function draw() {
 		
 		//Clear background
-
-		display.clear();
-		if(splashScreen.showSplash){
-            splashScreen.draw(display);
-        }else{
-
 		display.fill("rgba(0,0,0,1)");
 		
-
-		//Draw world
-		player.draw(display);
-		map.draw(display);
+		if (splashScreen.showSplash) {
+			splashScreen.draw(display);
+        } 
+		else {
+			//Draw world
+			player.draw(display);
+			map.draw(display);
         }
 
 	}

@@ -1,6 +1,8 @@
 var gamejs = require('gamejs');
 var tmx = require('gamejs/tmx');
 
+//var CAMERA_THRESHOLD = 50;
+
 /**
  * Loads the tmx at the given URL and holds all layers.
  */
@@ -8,6 +10,10 @@ var Map = exports.Map = function(url) {
 	
 	var offset = [0, 0];
 	var map = new tmx.Map(url);
+
+	//TODO
+	var viewport;
+	var camera;
 
 	var layerViews = map.layers.map(function(layer) {
 		return new LayerView(layer, {
@@ -22,19 +28,22 @@ var Map = exports.Map = function(url) {
 	this.handle = function(event) {
 		if (event.type === gamejs.event.KEY_DOWN) {
 			if (event.key === gamejs.event.K_LEFT) {
-				offset[0] += map.tileWidth;
-			} else if (event.key === gamejs.event.K_RIGHT) {
 				offset[0] -= map.tileWidth;
+			} else if (event.key === gamejs.event.K_RIGHT) {
+				offset[0] += map.tileWidth;
 			} else if (event.key === gamejs.event.K_DOWN) {
-				offset[1] -= map.tileHeight;
-			} else if (event.key === gamejs.event.K_UP) {
 				offset[1] += map.tileHeight;
+			} else if (event.key === gamejs.event.K_UP) {
+				offset[1] -= map.tileHeight;
 			}
 		}
 	};
 	
-	this.update = function(dt) {
+	this.update = function(dt, player) {
+	
+		var pos = player.rect.center;
 		
+		//TODO
 	}
 	
 	this.draw = function(display) { 
@@ -45,10 +54,10 @@ var Map = exports.Map = function(url) {
 	
 	this.getTileIndex = function(pos) {
 	
-		var x = Math.floor(pos[0] / map.tileWidth);
-		var y = Math.floor(pos[1] / map.tileHeight);
+		var x = (pos[0] - offset[0]) / map.tileWidth;
+		var y = (pos[1] - offset[1]) / map.tileHeight;
 		
-		return [x, y];
+		return [Math.floor(x), Math.floor(y)];
 	};
 	
 	this.getTileId = function(pos) {
@@ -106,8 +115,15 @@ var Map = exports.Map = function(url) {
 			if (this.canMove(sprite, x, 0)) {
 				sprite.rect.moveIp(x, 0);
 			}
-			else {
-				//TODO
+			//Left
+			else if (x < 0) {
+				x = (this.getTileIndex(sprite.rect.topleft)[0]) * map.tileWidth;
+				sprite.rect.left = x;
+			}
+			//Right
+			else if (x > 0 && sprite.rect.left % map.tileWidth != 0) {
+				x = (this.getTileIndex(sprite.rect.topleft)[0] + 1) * map.tileWidth;
+				sprite.rect.left = x;
 			}
 		}
 		
@@ -116,12 +132,18 @@ var Map = exports.Map = function(url) {
 			if (this.canMove(sprite, 0, y)) {
 				sprite.rect.moveIp(0, y);
 			}
-			else if (sprite.rect.bottom % map.tileHeight != 0) {
-				y = this.getTileIndex(sprite.rect.bottomleft)[1] * map.tileHeight;
-				sprite.rect.bottom = y + 16;
+			//Up
+			else if (y < 0) {
+				y = (this.getTileIndex(sprite.rect.bottomleft)[1]) * map.tileWidth;
+				sprite.rect.bottom = y;
+			}
+			//Down
+			else if (y > 0 && sprite.rect.bottom % map.tileHeight != 0) {
+				y = (this.getTileIndex(sprite.rect.bottomleft)[1] + 1) * map.tileHeight;
+				sprite.rect.bottom = y;
 			}
 		}
-	}
+	};
 	
 	this.move = function(sprite, x, y) {
 	
@@ -142,7 +164,7 @@ var Map = exports.Map = function(url) {
 			y > 0 ? y -= step : y += step;
 		}
 		this.tryMove(sprite, 0, y);
-	}
+	};
 
    return this;
 };
