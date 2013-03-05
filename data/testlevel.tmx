@@ -50,6 +50,11 @@
     <property name="collide" value=""/>
    </properties>
   </tile>
+  <tile id="13">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
   <tile id="14">
    <properties>
     <property name="collide" value=""/>
@@ -122,17 +127,7 @@
   </tile>
   <tile id="45">
    <properties>
-    <property name="collide" value=""/>
-   </properties>
-  </tile>
-  <tile id="46">
-   <properties>
-    <property name="collide" value=""/>
-   </properties>
-  </tile>
-  <tile id="48">
-   <properties>
-    <property name="collide" value=""/>
+    <property name="" value=""/>
    </properties>
   </tile>
   <tile id="49">
