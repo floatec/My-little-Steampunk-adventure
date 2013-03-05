@@ -151,20 +151,20 @@ var Map = exports.Map = function(url) {
 		
 		//X-axis
 		while(Math.abs(x) > step) {
-		
-			this.tryMove(sprite, 0, step);
-			x > 0 ? x -= step : x += step;
+			this.tryMove(sprite, sign(x) * step, 0);
+			x -= sign(x) * step;
 		}
 		this.tryMove(sprite, x, 0);
 		
 		//Y-axis
 		while(Math.abs(y) > step) {
-		
-			this.tryMove(sprite, 0, step);
-			y > 0 ? y -= step : y += step;
+			this.tryMove(sprite, 0, sign(y) * step);
+			y -= sign(y) * step;
 		}
 		this.tryMove(sprite, 0, y);
 	};
+	
+	function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; }
 
    return this;
 };
