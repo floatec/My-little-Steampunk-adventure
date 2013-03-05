@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="cache-control" content="no-cache" />
+	<title>GameJs</title>
+	<script src="./lib/yabble.js"></script>
+	<script src="./lib/gamejs.min.js"></script>
+	<script>
+        require.setModuleRoot('./javascript/');
+        require.run('main')
+	</script>
+	<style type="text/css">
+		canvas { border: 1px solid black; }
+	</style>
+</head>
+<body>
+    <div>
+        <div id="gjs-loader">
+			Loading...
+        </div>
+        <canvas id="gjs-canvas">
+			No HTML5 supported?
+		</canvas>
+    </div>
+</body>
+</html>
