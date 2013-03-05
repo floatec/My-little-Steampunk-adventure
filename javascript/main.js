@@ -5,6 +5,8 @@ gamejs.preload(['./data/tiles.png', './data/player.png', './data/hero.png']);
 
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
+var GRAVITY = 4;
+var JUMP_LENGHT = 0.3;
 
 var map;
 
@@ -20,14 +22,21 @@ function Player(position) {
 	//State variables
 	this.speed = 200;
 	this.xDir = 0;
-	this.yDir = 0;
+	this.isJumping = false;
+	this.jumpTime = 0;
 	
 	this.handle = function(event) {
 		if (event.type === gamejs.event.KEY_DOWN) {
-			if (event.key === gamejs.event.K_a && this.xDir == 0) this.xDir = -1;
-			if (event.key === gamejs.event.K_d && this.xDir == 0) this.xDir = 1;
-			if (event.key === gamejs.event.K_w && this.yDir == 0) this.yDir = -1;
-			if (event.key === gamejs.event.K_s && this.yDir == 0) this.yDir = 1;
+			if (event.key === gamejs.event.K_a && this.xDir == 0) { 
+				this.xDir = -1;
+			}
+			if (event.key === gamejs.event.K_d && this.xDir == 0) {
+				this.xDir = 1;
+			}
+			if (event.key === gamejs.event.K_w && !this.isJumping) {
+				this.isJumping = true;
+				this.jumpTime = 0;
+			}
 		}
 		else if (event.type === gamejs.event.KEY_UP) {
 			if (event.key === gamejs.event.K_a) this.xDir = 0;
@@ -39,13 +48,22 @@ function Player(position) {
 	
 	this.update = function(dt) {
 	
-		//Calculate new position
+		//Calculate new X
 		var x = this.xDir * 4;
-		var y = this.yDir * 4;
+		map.tryMove(this, x, 0);
 		
-		//console.log(this.rect.topleft);
-		
-		map.tryMove(this, x, y);
+		//Calculate new Y
+		if (this.isJumping) {
+			map.tryMove(this, 0, -4);
+			this.jumpTime += dt;
+			
+			if (this.jumpTime >= JUMP_LENGHT) {
+				this.isJumping = false;
+			}
+		}
+		else {
+			map.tryMove(this, 0, GRAVITY);
+		}
 	};
 };
 gamejs.utils.objects.extend(Player, gamejs.sprite.Sprite);
@@ -88,8 +106,8 @@ function main() {
 		display.clear();
 		
 		//Draw world
-		map.draw(display);
 		player.draw(display);
+		map.draw(display);
 	}
 };
 
