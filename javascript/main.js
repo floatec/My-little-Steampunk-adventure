@@ -5,8 +5,8 @@ gamejs.preload(['./data/tiles.png', './data/player.png', './data/hero.png']);
 
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
-var GRAVITY = 4;
-var JUMP_LENGHT = 0.3;
+var GRAVITY = 2;
+var JUMP_IMPULSE = 15;
 
 var map;
 
@@ -24,8 +24,6 @@ function Player(position) {
 	this.velocity = 0;
 	this.xDir = 0;
 	this.isAtGround = false;
-	this.isJumping = false;
-	//this.jumpTime = 0;
 	
 	this.handle = function(event) {
 		if (event.type === gamejs.event.KEY_DOWN) {
@@ -36,7 +34,7 @@ function Player(position) {
 				this.xDir = 1;
 			}
 			if (event.key === gamejs.event.K_w && this.isAtGround) {
-				this.velocity = -15;
+				this.velocity = -JUMP_IMPULSE;
 			}
 		}
 		else if (event.type === gamejs.event.KEY_UP) {
@@ -57,7 +55,7 @@ function Player(position) {
 		
 		//Calculate new Y
 		if (!this.isAtGround) {
-			this.velocity += 2;
+			this.velocity += GRAVITY;
 		}
 		else if (this.velocity > 0) {
 			this.velocity = 0;
@@ -103,7 +101,7 @@ function main() {
 	function draw() {
 		
 		//Clear background
-		display.clear();
+		display.fill("rgba(0,0,0,1)");
 		
 		//Draw world
 		player.draw(display);
