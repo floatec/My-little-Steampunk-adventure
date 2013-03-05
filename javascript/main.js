@@ -3,7 +3,9 @@ var view = require('./view');
 
 gamejs.preload(['./data/tiles.png', './data/player_r.png', './data/player_l.png', './data/player_r_s.png',
     './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
-    './data/player_l_sp.png', './data/hero.png','./data/splash.png']);
+    './data/player_l_sp.png', './data/hero.png','./data/splash.png',
+    './data/_s.png','./data/_s_a.png', './data/_g_a.png',
+    './data/_g.png', './data/_sp.png','./data/_sp_a.png' ]);
 
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
@@ -15,12 +17,13 @@ var ITEM_SWORT="_s";
 var ITEM_GUN="_g";
 var ITEM_SPRING="_sp";
 var ITEM_NONE="";
+var ITEM_ACTIVATED="_a";
 var map;
 
-function Item(name,position) {
+function Item(name,position,handle) {
     this.active=false;
     this.name=name;
-    SplashScreen.superConstructor.apply(this, arguments);
+    Item.superConstructor.apply(this, arguments);
 
     //Load and flip image
     this.image = gamejs.image.load("./data/"+name+".png");
@@ -28,19 +31,22 @@ function Item(name,position) {
     //Generate random position at top of screen
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect(position, this.size);
-
+    this.active = function(){
+        this.image = gamejs.image.load("./data/"+this.name+ITEM_ACTIVATED+".png");
+        console.log(this.name);
+    }
+    this.deactive = function(){
+        this.image = gamejs.image.load("./data/"+this.name+".png");
+    }
 
     this.update = function(dt) {
 
 
     };
-    this.handle = function(event) {
-
-
-    };
+    this.handle = handle;
 };
 
-gamejs.utils.objects.extend(SplashScreen, gamejs.sprite.Sprite);
+gamejs.utils.objects.extend(Item, gamejs.sprite.Sprite);
 
 function SplashScreen() {
     this.showSplash=true;
@@ -99,6 +105,7 @@ function Player(position) {
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
             }
             if (event.key === gamejs.event.K_1) {
+
                 this.item=ITEM_SWORT;
             }
             if (event.key === gamejs.event.K_2) {
@@ -154,7 +161,31 @@ function main() {
     map = new view.Map('./data/testlevel.tmx');
     var player = new Player([96, 48]);
     var splashScreen = new SplashScreen();
-
+    var menu=[];
+    menu[ITEM_GUN]=new Item(ITEM_GUN,[32+10,5],function(event){
+        if (event.key === gamejs.event.K_2) {
+            for(i in menu){
+                menu[i].deactive();
+            }
+            menu[ITEM_GUN].active();
+        }
+    });
+    menu[ITEM_SPRING]=new Item(ITEM_SPRING,[64+15,5],function(event){
+        if (event.key === gamejs.event.K_3) {
+            for(i in menu){
+                menu[i].deactive();
+            }
+            menu[ITEM_SPRING].active();
+        }
+    });
+    menu[ITEM_SWORT]=new Item(ITEM_SWORT,[5,5],function(event){
+        if (event.key === gamejs.event.K_1) {
+            for(i in menu){
+                menu[i].deactive();
+            }
+            menu[ITEM_SWORT].active();
+        }
+    });
     //The gameloop
     function gameTick(gameTime) {
 
@@ -172,6 +203,9 @@ function main() {
             player.handle(event);
             map.handle(event);
             splashScreen.handle(event);
+            for (i in menu){
+                menu[i].handle(event);
+            }
         });
 
         //Update world
@@ -191,6 +225,9 @@ function main() {
             //Draw world
             player.draw(display);
             map.draw(display);
+            for( i in menu){
+                menu[i].draw(display);
+            }
         }
 
     }
