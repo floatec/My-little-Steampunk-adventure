@@ -5,7 +5,7 @@ gamejs.preload(['./data/tiles.png', './data/player_r.png', './data/player_l.png'
     './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
     './data/player_l_sp.png', './data/hero.png','./data/splash.png',
     './data/_s.png','./data/_s_a.png', './data/_g_a.png',
-    './data/_g.png', './data/_sp.png','./data/_sp_a.png' ]);
+    './data/_g.png', './data/_sp.png','./data/_sp_a.png','./data/gameover.png' ]);
 
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
@@ -58,13 +58,15 @@ function SplashScreen() {
     //Generate random position at top of screen
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect([0,0], this.size);
-
+    this.setGameOver=function(){
+        this.image = gamejs.image.load("./data/gameover.png");
+    }
 
     this.update = function(dt) {
 
 
     };
-    this.handle = function(event) {
+    this.handle = function(event,player) {
 
         if (event.type === gamejs.event.MOUSE_DOWN) {
             this.showSplash=false;
@@ -90,6 +92,7 @@ function Player(position) {
     this.isAtGround = false;
     this.dir=DIR_RIGHT;
     this.item=ITEM_NONE;
+    this.alive=true;
 
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
@@ -148,6 +151,10 @@ function Player(position) {
         this.image = gamejs.image.load('./data/player'+this.dir+this.item+'.png');
 
         map.move(this, 0, this.velocity);
+        if(map.hitsKillingObject(this, 0, 0)){
+            console.log("kill");
+           // this.alive=false;
+        }
     };
 };
 gamejs.utils.objects.extend(Player, gamejs.sprite.Sprite);
@@ -202,7 +209,7 @@ function main() {
         gamejs.event.get().forEach(function(event) {
             player.handle(event);
             map.handle(event);
-            splashScreen.handle(event);
+            splashScreen.handle(event,player);
             for (i in menu){
                 menu[i].handle(event);
             }
@@ -218,10 +225,12 @@ function main() {
         //Clear background
         display.fill("rgba(0,0,0,1)");
 
-        if (splashScreen.showSplash) {
+        if (splashScreen.showSplash||!player.alive){
+            if(!player.alive){
+                splashScreen.setGameOver();
+            }
             splashScreen.draw(display);
-        }
-        else {
+        } else {
             //Draw world
             player.draw(display);
             map.draw(display);
