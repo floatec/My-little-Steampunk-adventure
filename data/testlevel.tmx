@@ -145,6 +145,26 @@
     <property name="collide" value=""/>
    </properties>
   </tile>
+  <tile id="51">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="52">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="54">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="56">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
   <tile id="72">
    <properties>
     <property name="collide" value=""/>
@@ -196,6 +216,36 @@
    </properties>
   </tile>
   <tile id="86">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="90">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="91">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="94">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="95">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="96">
+   <properties>
+    <property name="collide" value=""/>
+   </properties>
+  </tile>
+  <tile id="98">
    <properties>
     <property name="collide" value=""/>
    </properties>
