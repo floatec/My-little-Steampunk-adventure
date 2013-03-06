@@ -13,7 +13,7 @@ var GRAVITY = 2;
 var JUMP_IMPULSE = 15;
 var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
-var ITEM_SWORT="_s";
+var ITEM_SWORD="_s";
 var ITEM_GUN="_g";
 var ITEM_SPRING="_sp";
 var ITEM_NONE="";
@@ -26,55 +26,55 @@ function Item(name,position,handle) {
     Item.superConstructor.apply(this, arguments);
 
     //Load and flip image
-    this.image = gamejs.image.load("./data/"+name+".png");
+    this.image = gamejs.image.load("./data/" + name + ".png");
 
     //Generate random position at top of screen
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect(position, this.size);
+
     this.active = function(){
-        this.image = gamejs.image.load("./data/"+this.name+ITEM_ACTIVATED+".png");
-        console.log(this.name);
-    }
-    this.deactive = function(){
-        this.image = gamejs.image.load("./data/"+this.name+".png");
-    }
+        this.image = gamejs.image.load("./data/" + this.name + ITEM_ACTIVATED + ".png");
+    };
+
+    this.deactivate = function(){
+        this.image = gamejs.image.load("./data/" + this.name + ".png");
+    };
 
     this.update = function(dt) {
 
-
     };
+
     this.handle = handle;
-};
+}
 
 gamejs.utils.objects.extend(Item, gamejs.sprite.Sprite);
 
 function SplashScreen() {
-    this.showSplash=true;
     SplashScreen.superConstructor.apply(this, arguments);
 
-    //Load and flip image
+    //Load image
     this.image = gamejs.image.load("./data/splash.png");
-
-    //Generate random position at top of screen
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect([0,0], this.size);
-    this.setGameOver=function(){
+
+    this.showSplash=true;
+
+    this.setGameOver = function() {
         this.image = gamejs.image.load("./data/gameover.png");
-    }
+    };
 
     this.update = function(dt) {
 
-
     };
-    this.handle = function(event,player) {
+
+    this.handle = function(event) {
 
         if (event.type === gamejs.event.MOUSE_DOWN) {
             this.showSplash=false;
         }
     };
-};
+}
 gamejs.utils.objects.extend(SplashScreen, gamejs.sprite.Sprite);
-
 
 function Player(position) {
     Player.superConstructor.apply(this, arguments);
@@ -90,9 +90,9 @@ function Player(position) {
     this.velocity = 0;
     this.xDir = 0;
     this.isAtGround = false;
-    this.dir=DIR_RIGHT;
-    this.item=ITEM_NONE;
-    this.alive=true;
+    this.dir = DIR_RIGHT;
+    this.item = ITEM_NONE;
+    this.alive = true;
 
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
@@ -105,11 +105,10 @@ function Player(position) {
                 this.dir =DIR_RIGHT;
             }
             if (event.key === gamejs.event.K_w && this.isAtGround) {
-                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
+                this.velocity = -JUMP_IMPULSE * (this.item == ITEM_SPRING ? 2 : 1);
             }
             if (event.key === gamejs.event.K_1) {
-
-                this.item=ITEM_SWORT;
+                this.item=ITEM_SWORD;
             }
             if (event.key === gamejs.event.K_2) {
                 this.item=ITEM_GUN;
@@ -121,14 +120,11 @@ function Player(position) {
         else if (event.type === gamejs.event.KEY_UP) {
             if (event.key === gamejs.event.K_a) this.xDir = 0;
             if (event.key === gamejs.event.K_d) this.xDir = 0;
-            if (event.key === gamejs.event.K_w) this.yDir = 0;
-            if (event.key === gamejs.event.K_s) this.yDir = 0;
         }
     };
 
     this.update = function(dt) {
 
-        //Collide with ground
         this.isAtGround = !map.canMove(this, 0, 1);
 
         //Calculate new X
@@ -144,19 +140,27 @@ function Player(position) {
                 this.velocity = 0;
             }
         }
+        //Collide with ground
         else if (this.velocity > 0) {
-            this.velocity = 0;
+
+            //if (this.item == ITEM_SPRING && this.velocity > 2) {
+            //   this.velocity *= -1 * 0.5;
+            //}
+            //else {
+                this.velocity = 0;
+            //}
         }
 
-        this.image = gamejs.image.load('./data/player'+this.dir+this.item+'.png');
+        //TODO Fix performance
+        this.image = gamejs.image.load('./data/player' +this.dir + this.item + '.png');
 
         map.move(this, 0, this.velocity);
-        if(map.hitsKillingObject(this, 0, 0)){
-            console.log("kill");
-           // this.alive=false;
+
+        if (map.hitsKillingObject(this)) {
+            this.alive = false;
         }
     };
-};
+}
 gamejs.utils.objects.extend(Player, gamejs.sprite.Sprite);
 
 function main() {
@@ -166,13 +170,15 @@ function main() {
 
     //Initialize variables
     map = new view.Map('./data/testlevel.tmx');
+
     var player = new Player([96, 48]);
     var splashScreen = new SplashScreen();
-    var menu=[];
+    var menu = [];
+
     menu[ITEM_GUN]=new Item(ITEM_GUN,[32+10,5],function(event){
         if (event.key === gamejs.event.K_2) {
             for(i in menu){
-                menu[i].deactive();
+                menu[i].deactivate();
             }
             menu[ITEM_GUN].active();
         }
@@ -180,26 +186,27 @@ function main() {
     menu[ITEM_SPRING]=new Item(ITEM_SPRING,[64+15,5],function(event){
         if (event.key === gamejs.event.K_3) {
             for(i in menu){
-                menu[i].deactive();
+                menu[i].deactivate();
             }
             menu[ITEM_SPRING].active();
         }
     });
-    menu[ITEM_SWORT]=new Item(ITEM_SWORT,[5,5],function(event){
+    menu[ITEM_SWORD]=new Item(ITEM_SWORD,[5,5],function(event){
         if (event.key === gamejs.event.K_1) {
             for(i in menu){
-                menu[i].deactive();
+                menu[i].deactivate();
             }
-            menu[ITEM_SWORT].active();
+            menu[ITEM_SWORD].active();
         }
     });
+
     //The gameloop
     function gameTick(gameTime) {
 
         update(gameTime);
         draw();
-    };
-    gamejs.time.fpsCallback(gameTick, this, 30);
+    }
+    gamejs.time.interval(gameTick, 30, this);
 
     function update(gameTime) {
 
@@ -209,20 +216,21 @@ function main() {
         gamejs.event.get().forEach(function(event) {
             player.handle(event);
             map.handle(event);
-            splashScreen.handle(event,player);
-            for (i in menu){
+            splashScreen.handle(event);
+
+            for (i in menu) {
                 menu[i].handle(event);
             }
         });
 
         //Update world
-        player.update(dt)
+        player.update(dt);
         map.update(dt, player);
     }
 
     function draw() {
 
-        //Clear background
+        //Background
         display.fill("rgba(0,0,0,1)");
 
         if (splashScreen.showSplash||!player.alive){
@@ -240,7 +248,7 @@ function main() {
         }
 
     }
-};
+}
 
 //Start game
 gamejs.ready(main);

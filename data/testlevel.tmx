@@ -247,15 +247,30 @@
   </tile>
   <tile id="105">
    <properties>
-    <property name="kill" value=""/>
+    <property name="" value=""/>
    </properties>
   </tile>
   <tile id="106">
    <properties>
-    <property name="kill" value=""/>
+    <property name="" value=""/>
    </properties>
   </tile>
   <tile id="107">
+   <properties>
+    <property name="" value=""/>
+   </properties>
+  </tile>
+  <tile id="117">
+   <properties>
+    <property name="kill" value=""/>
+   </properties>
+  </tile>
+  <tile id="118">
+   <properties>
+    <property name="kill" value=""/>
+   </properties>
+  </tile>
+  <tile id="119">
    <properties>
     <property name="kill" value=""/>
    </properties>

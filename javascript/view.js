@@ -79,7 +79,7 @@ var Map = exports.Map = function(url) {
 	};
 		
 	this.getTileProperty = function(pos, property) {
-	
+
 		var id = this.getTileId(pos);
 		var properties = map.tiles.getProperties(id);
 
@@ -93,11 +93,13 @@ var Map = exports.Map = function(url) {
 	};
 	
 	this.canMove = function(sprite, x, y) {
-	    return !this.hitsObjectwithProperty(sprite,x,y,"collide");
+	    return !this.hitsObjectwithProperty(sprite, x, y, "collide");
     };
-    this.hitsKillingObject = function(sprite, x, y) {
-        return this.hitsObjectwithProperty(sprite,x,y,"kill");
+
+    this.hitsKillingObject = function(sprite) {
+        return this.hitsObjectwithProperty(sprite, 0, 0, "kill");
     };
+
     this.hitsObjectwithProperty = function(sprite, x, y,property) {
 
         var newPos = sprite.rect.clone();
