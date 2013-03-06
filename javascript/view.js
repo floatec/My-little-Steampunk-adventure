@@ -61,6 +61,11 @@ var Map = exports.Map = function(url) {
         var x = (pos[0] - offset[0]) / map.tileWidth;
         var y = (pos[1] - offset[1]) / map.tileHeight;
 
+        if (x < 0 || x > map.width || y < 0 || y > map.height) {
+            //TODO Better error handling
+            console.log("ERROR: Tile [" + Math.floor(x) + "," + Math.floor(y) + "] does not exist!");
+        }
+
         return [Math.floor(x), Math.floor(y)];
     };
 

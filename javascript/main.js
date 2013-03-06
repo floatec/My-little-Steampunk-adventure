@@ -23,28 +23,26 @@ var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
 var map;
 
 function Item(name,position,handle) {
-    this.active=false;
-    this.name=name;
+    this.active = false;
+    this.name = name;
     Item.superConstructor.apply(this, arguments);
 
-    //Load and flip image
-    this.image = gamejs.image.load("./data/"+name+".png");
-
-    //Generate random position at top of screen
+    this.image = gamejs.image.load("./data/" + name + ".png");
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect(position, this.size);
+
     this.active = function(){
-        this.image = gamejs.image.load("./data/"+this.name+ITEM_ACTIVATED+".png");
-        console.log(this.name);
+        this.image = gamejs.image.load("./data/" + this.name + ITEM_ACTIVATED + ".png");
     }
+
     this.deactive = function(){
-        this.image = gamejs.image.load("./data/"+this.name+".png");
+        this.image = gamejs.image.load("./data/" + this.name + ".png");
     }
 
     this.update = function(dt) {
 
-
     };
+
     this.handle = handle;
 };
 
@@ -54,13 +52,11 @@ function SplashScreen() {
     this.showSplash=true;
     SplashScreen.superConstructor.apply(this, arguments);
 
-    //Load and flip image
     this.image = gamejs.image.load("./data/splash.png");
-
-    //Generate random position at top of screen
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect([0,0], this.size);
     this.gameover=false;
+
     this.setGameOver=function(){
         this.gameover=true;
         this.image = gamejs.image.load("./data/gameover.png");
@@ -68,13 +64,13 @@ function SplashScreen() {
 
     this.update = function(dt) {
 
-
     };
+
     this.handle = function(event,player) {
 
         if (event.type === gamejs.event.MOUSE_DOWN) {
             this.showSplash=false;
-            if(this.gameover){
+            if (this.gameover) {
                 window.location.reload();
             }
         }
@@ -104,18 +100,17 @@ function Player(position) {
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
             if (event.key === gamejs.event.K_a && this.xDir == 0) {
-                this.xDir = -1*(this.item==ITEM_NONE?2:1);
+                this.xDir = -1 * (this.item==ITEM_NONE ? 2 : 1);
                 this.dir=DIR_LEFT;
             }
             if (event.key === gamejs.event.K_d && this.xDir == 0) {
-                this.xDir = 1*(this.item==ITEM_NONE?2:1);
+                this.xDir = 1 * (this.item==ITEM_NONE ? 2 : 1);
                 this.dir =DIR_RIGHT;
             }
             if (event.key === gamejs.event.K_w && this.isAtGround) {
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
             }
             if (event.key === ITEM_KEYS.sword) {
-
                 this.item=ITEM_SWORD;
             }
             if (event.key === ITEM_KEYS.gun) {
@@ -131,8 +126,6 @@ function Player(position) {
         else if (event.type === gamejs.event.KEY_UP) {
             if (event.key === gamejs.event.K_a) this.xDir = 0;
             if (event.key === gamejs.event.K_d) this.xDir = 0;
-            if (event.key === gamejs.event.K_w) this.yDir = 0;
-            if (event.key === gamejs.event.K_s) this.yDir = 0;
         }
     };
 
@@ -243,7 +236,7 @@ function main() {
 
     function draw() {
 
-        //Clear background
+        //Background
         display.fill("rgba(0,0,0,1)");
 
         if (splashScreen.showSplash||!player.alive){
@@ -253,7 +246,8 @@ function main() {
             //Draw world
             player.draw(display);
             map.draw(display);
-            for( i in menu){
+
+            for (i in menu){
                 menu[i].draw(display);
             }
         }
