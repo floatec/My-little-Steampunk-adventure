@@ -29,7 +29,7 @@ var triggertActions=[]
 addTriggeredAction([96,192])
 
 function addTriggeredAction(position,callback){
-    triggeredAction.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
+    triggeredActions.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
 }
 function checkforTriggeredAction(player){
     for(action in triggertActions){
