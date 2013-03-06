@@ -25,20 +25,23 @@ var INFO_TIME=5;
 var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 var map;
-
-var triggertActions=[]
-addTriggeredAction([96,192])
 var infobox =new Info(" ");
 
-function addTriggeredAction(position,callback){
-    triggertActions.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
+var triggertActions=[]
+addTriggeredAction(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");})
+
+
+function addTriggeredAction(rect,callback){
+    var obj={callback:callback,rect:rect};
+    triggertActions.push(obj);
 
 }
 function checkforTriggeredAction(player){
     for(action in triggertActions){
-      /*  if(player.rect.collideRect(action.rect)){
-            action.callback();
-        }*/
+
+      if(player.rect.collideRect(triggertActions[action].rect)){
+            triggertActions[action].callback();
+        }
     }
 }
 
