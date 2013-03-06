@@ -13,12 +13,12 @@ var GRAVITY = 2;
 var JUMP_IMPULSE = 15;
 var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
-var ITEM_SWORT="_s";
+var ITEM_SWORD="_s";
 var ITEM_GUN="_g";
 var ITEM_SPRING="_sp";
 var ITEM_NONE="_n";
 var ITEM_ACTIVATED="_a";
-var ITEM_KEYS={none:gamejs.event.K_1,swort:gamejs.event.K_2,
+var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 var map;
 
@@ -98,7 +98,7 @@ function Player(position) {
     this.xDir = 0;
     this.isAtGround = false;
     this.dir=DIR_RIGHT;
-    this.item=ITEM_SWORT;
+    this.item=ITEM_SWORD;
     this.alive=true;
 
     this.handle = function(event) {
@@ -114,9 +114,9 @@ function Player(position) {
             if (event.key === gamejs.event.K_w && this.isAtGround) {
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
             }
-            if (event.key === ITEM_KEYS.swort) {
+            if (event.key === ITEM_KEYS.sword) {
 
-                this.item=ITEM_SWORT;
+                this.item=ITEM_SWORD;
             }
             if (event.key === ITEM_KEYS.gun) {
                 this.item=ITEM_GUN;
@@ -195,12 +195,12 @@ function main() {
             menu[ITEM_SPRING].active();
         }
     });
-    menu[ITEM_SWORT]=new Item(ITEM_SWORT,[32+10,5],function(event){
-        if (event.key === ITEM_KEYS.swort) {
+    menu[ITEM_SWORD]=new Item(ITEM_SWORD,[32+10,5],function(event){
+        if (event.key === ITEM_KEYS.sword) {
             for(i in menu){
                 menu[i].deactive();
             }
-            menu[ITEM_SWORT].active();
+            menu[ITEM_SWORD].active();
         }
     });
     menu[ITEM_NONE]=new Item(ITEM_NONE,[5,5],function(event){
@@ -211,14 +211,14 @@ function main() {
             menu[ITEM_NONE].active();
         }
     });
-    menu[ITEM_SWORT].active();
+    menu[ITEM_SWORD].active();
     //The gameloop
     function gameTick(gameTime) {
 
         update(gameTime);
         draw();
     };
-    gamejs.time.fpsCallback(gameTick, this, 30);
+    gamejs.time.interval(gameTick, 30, this);
 
     function update(gameTime) {
 
@@ -227,7 +227,6 @@ function main() {
         //Process input
         gamejs.event.get().forEach(function(event) {
             player.handle(event);
-            map.handle(event);
             splashScreen.handle(event);
             for (i in menu){
                 menu[i].handle(event);

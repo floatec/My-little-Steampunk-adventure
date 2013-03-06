@@ -1,8 +1,9 @@
 var gamejs = require('gamejs');
 var tmx = require('gamejs/tmx');
 
-var WIDTH = 800; //TODO pass by parameter
-var CAMERA_THRESHOLD = 16;
+//TODO pass by parameter
+var WIDTH = 800;
+var HEIGHT = 480;
 var CAMERA_MOVE_OFFSET = 32;
 
 /**
@@ -23,24 +24,10 @@ var Map = exports.Map = function(url) {
 		});
 	});
 	
-	this.handle = function(event) {
-		if (event.type === gamejs.event.KEY_DOWN) {
-			if (event.key === gamejs.event.K_LEFT) {
-				offset[0] += map.tileWidth;
-			} else if (event.key === gamejs.event.K_RIGHT) {
-				offset[0] -= map.tileWidth;
-			} else if (event.key === gamejs.event.K_DOWN) {
-				offset[1] -= map.tileHeight;
-			} else if (event.key === gamejs.event.K_UP) {
-				offset[1] += map.tileHeight;
-			}
-		}
-	};
-	
 	this.update = function(dt, player) {
 
         //Scroll to the right
-        if (player.rect.right > WIDTH - offset[0]) {
+        if (player.rect.right > WIDTH) {
             offset[0] -= WIDTH - CAMERA_MOVE_OFFSET;
             player.rect.right = CAMERA_MOVE_OFFSET;
         }
@@ -48,6 +35,17 @@ var Map = exports.Map = function(url) {
         else if (player.rect.left < 0) {
             offset[0] += WIDTH - CAMERA_MOVE_OFFSET;
             player.rect.left = WIDTH - CAMERA_MOVE_OFFSET;
+        }
+
+        //Scroll down
+        if (player.rect.bottom > HEIGHT) {
+            offset[1] -= HEIGHT - CAMERA_MOVE_OFFSET;
+            player.rect.bottom = CAMERA_MOVE_OFFSET;
+        }
+        //Scroll up
+        else if (player.rect.top < 0) {
+            offset[1] += HEIGHT - CAMERA_MOVE_OFFSET;
+            player.rect.top = HEIGHT - CAMERA_MOVE_OFFSET;
         }
 	};
 	
