@@ -363,11 +363,15 @@ function main() {
 
             splashScreen.draw(display);
         } else {
+
             //Draw world
+            map.drawBackground(display);
             player.draw(display);
             enemies.draw(display);
-            map.draw(display);
-           infobox.draw(display);
+            map.drawForeground(display);
+
+            //Draw overlay
+            infobox.draw(display);
             for (i in menu){
                 menu[i].draw(display);
             }

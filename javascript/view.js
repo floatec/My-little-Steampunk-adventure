@@ -39,11 +39,15 @@ var Map = exports.Map = function(url) {
 
 	};
 	
-	this.draw = function(display) {
+	this.drawForeground = function(display) {
 
-        //Draw only first layer
         layerViews[0].draw(display, offset);
 	};
+
+    this.drawBackground = function (display) {
+
+        layerViews[2].draw(display, offset);
+    }
 
     this.moveOffset = function(x, y) {
         offset[0] += x;
