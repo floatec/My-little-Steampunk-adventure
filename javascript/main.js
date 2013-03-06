@@ -32,18 +32,48 @@ var ITEM_NONE="_n";
 var ITEM_ACTIVATED="_a";
 var INFO_TIME=2;
 var TILE_SIZE=16;
-var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
-    spring:gamejs.event.K_4,gun:gamejs.event.K_3};
+var ITEM_KEYS={none:gamejs.event.K_4,sword:gamejs.event.K_1,
+    spring:gamejs.event.K_2,gun:gamejs.event.K_3};
 
 //Misc
 var map;
 var player;
 var enemies;
 var infobox =new Info(" ");
-
+var menu=[];
 var triggers=[]
 addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");})
 addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Press W to jump");})
+addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
+    infobox =new Info("Ohh some Springs!\n(switch with 1 and 2 your item)");
+    player.inventory.push(ITEM_SPRING);
+    menu[ITEM_SPRING]=new Item(ITEM_SPRING,[32+10,5],function(event){
+        if (event.key === ITEM_KEYS.spring) {
+            for (i in menu) {
+                menu[i].deactivate();
+            }
+            menu[ITEM_SPRING].active();
+            console.log(menu);
+        }
+    });
+})
+
+/*menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
+ if (event.key === ITEM_KEYS.gun) {
+ for (i in menu) {
+ menu[i].deactivate();
+ }
+ menu[ITEM_GUN].active();
+ }
+ });
+ menu[ITEM_NONE]=new Item(ITEM_NONE,[96+20,5],function(event){
+ if (event.key === ITEM_KEYS.none) {
+ for (i in menu) {
+ menu[i].deactivate();
+ }
+ menu[ITEM_NONE].active();
+ }
+ });*/
 
 function addTrigger(rect, callback){
     var obj = { callback:callback, rect:rect };
@@ -153,6 +183,16 @@ function Player(position) {
     this.dir=DIR_RIGHT;
     this.item=ITEM_SWORD;
     this.alive=true;
+    this.inventory=[];
+    this.inventory.push(ITEM_SWORD);
+    this.isInInventory=function(item){
+        for(i in this.inventory){
+            if(item==this.inventory[i]){
+                return true;
+            }
+        }
+        return false;
+    }
 
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
@@ -167,16 +207,16 @@ function Player(position) {
             if (event.key === gamejs.event.K_w && this.isAtGround) {
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
             }
-            if (event.key === ITEM_KEYS.sword) {
+            if (event.key === ITEM_KEYS.sword&&player.isInInventory(ITEM_SWORD)) {
                 this.item = ITEM_SWORD;
             }
-            if (event.key === ITEM_KEYS.gun) {
+            if (event.key === ITEM_KEYS.gun&&player.isInInventory(ITEM_GUN)) {
                 this.item = ITEM_GUN;
             }
-            if (event.key === ITEM_KEYS.spring) {
+            if (event.key === ITEM_KEYS.spring&&player.isInInventory(ITEM_SPRING)) {
                 this.item = ITEM_SPRING;
             }
-            if (event.key === ITEM_KEYS.none) {
+            if (event.key === ITEM_KEYS.none&&player.isInInventory(ITEM_NONE)) {
                 this.item = ITEM_NONE;
             }
         }
@@ -254,29 +294,14 @@ function main() {
     var createEnemy = function(pos) { enemies.add(new Enemy(pos)); };
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
-    var menu = [];
+    menu = [];
 
     //Initialize map
     map = new view.Map(TMX_FILE);
     map.loadObjects(createEnemy);
 
-    menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
-        if (event.key === ITEM_KEYS.gun) {
-            for (i in menu) {
-                menu[i].deactivate();
-            }
-            menu[ITEM_GUN].active();
-        }
-    });
-    menu[ITEM_SPRING]=new Item(ITEM_SPRING,[64+32+20,5],function(event){
-        if (event.key === ITEM_KEYS.spring) {
-            for (i in menu) {
-                menu[i].deactivate();
-            }
-            menu[ITEM_SPRING].active();
-        }
-    });
-    menu[ITEM_SWORD]=new Item(ITEM_SWORD,[32+10,5],function(event){
+
+    menu[ITEM_SWORD]=new Item(ITEM_SWORD,[0+5,5],function(event){
         if (event.key === ITEM_KEYS.sword) {
             for (i in menu) {
                 menu[i].deactivate();
@@ -284,14 +309,7 @@ function main() {
             menu[ITEM_SWORD].active();
         }
     });
-    menu[ITEM_NONE]=new Item(ITEM_NONE,[5,5],function(event){
-        if (event.key === ITEM_KEYS.none) {
-            for (i in menu) {
-                menu[i].deactivate();
-            }
-            menu[ITEM_NONE].active();
-        }
-    });
+
     menu[ITEM_SWORD].active();
 
     //The gameloop
