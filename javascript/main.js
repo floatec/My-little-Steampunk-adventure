@@ -3,7 +3,7 @@ var view = require('./view');
 
 gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.png', './data/player_r_s.png',
     './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
-    './data/player_l_sp.png', './data/hero.png','./data/splash.png',
+    './data/player_l_sp.png', './data/enemy_l.png', './data/enemy_r.png', './data/hero.png','./data/splash.png',
     './data/_s.png','./data/_s_a.png', './data/_g_a.png',
     './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png', './data/box.png','./data/_n_a.png','./data/gameover.png' ]);
 
@@ -17,7 +17,7 @@ var CAMERA_MOVE_OFFSET = 32;
 var TMX_FILE = './data/testlevel.tmx';
 
 //Physics
-var GRAVITY = 2;
+var GRAVITY = 60;
 var JUMP_IMPULSE = 15;
 
 //Player
@@ -166,6 +166,34 @@ function SplashScreen() {
 }
 gamejs.utils.objects.extend(SplashScreen, gamejs.sprite.Sprite);
 
+function Entity() {
+    Entity.superConstructor.apply(this, arguments);
+
+    this.velocity = 0;
+    this.isAtGround = false;
+
+    this.updatePhysics = function(dt) {
+        this.isAtGround = !map.canMove(this, 0, 0.01);
+
+        //Calculate new Y
+        if (!this.isAtGround) {
+            this.velocity += GRAVITY * dt;
+
+            //Collide with ceiling
+            if (this.velocity < 0 && !map.canMove(this, 0, -0.01)) {
+                this.velocity = 0;
+            }
+        }
+        //Collide with ground
+        else if (this.velocity > 0) {
+            this.velocity = 0;
+        }
+
+        map.move(this, 0, this.velocity);
+    };
+}
+gamejs.utils.objects.extend(Entity, gamejs.sprite.Sprite);
+
 function Player(position) {
     Player.superConstructor.apply(this, arguments);
 
@@ -228,60 +256,60 @@ function Player(position) {
 
     this.update = function(dt) {
 
-        //Collide with ground
-        this.isAtGround = !map.canMove(this, 0, 1);
-
         //Calculate new X
         var x = this.xDir * this.speed * dt;
         map.move(this, x, 0);
 
-        //Calculate new Y
-        if (!this.isAtGround) {
-            this.velocity += GRAVITY;
+        //Falling etc.
+        this.updatePhysics(dt);
 
-            //Collide with ceiling
-            if (this.velocity < 0 && !map.canMove(this, 0, -1)) {
-                this.velocity = 0;
-            }
-        }
-        else if (this.velocity > 0) {
-            this.velocity = 0;
-        }
-        map.move(this, 0, this.velocity);
+        //TODO Fix for performance
+        this.image = gamejs.image.load('./data/player' + this.dir + this.item + '.png');
 
-        this.image = gamejs.image.load('./data/player'+this.dir+this.item+'.png');
-
+        //Kill
         if (map.hitsKillingObject(this)) {
             this.alive = false;
         }
     };
 }
-gamejs.utils.objects.extend(Player, gamejs.sprite.Sprite);
+gamejs.utils.objects.extend(Player, Entity);
 
 function Enemy(pos) {
     Enemy.superConstructor.apply(this, arguments);
 
-    this.image = gamejs.image.load('./data/player_r_n.png');
+    this.image = gamejs.image.load('./data/enemy_r.png');
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect([pos[0], pos[1] - 16], this.size);
 
-    this.speed = 50;
+    this.speed = 80;
     this.direction = 1;
     this.health = 2;
 
     this.update = function(dt) {
 
+        //Move
         var x = this.speed * this.direction * dt;
-
         if (map.canMove(this, x, 0)) {
             map.move(this, x, 0);
         }
+
+        //Change direction
         else {
             this.direction *= -1;
+
+            if (this.direction > 0) {
+                this.image = gamejs.image.load('./data/enemy_r.png');
+            }
+            else {
+                this.image = gamejs.image.load('./data/enemy_l.png');
+            }
         }
+
+        //Falling etc.
+        this.updatePhysics(dt);
     };
 }
-gamejs.utils.objects.extend(Enemy, gamejs.sprite.Sprite);
+gamejs.utils.objects.extend(Enemy, Entity);
 
 function main() {
 
@@ -354,11 +382,15 @@ function main() {
 
             splashScreen.draw(display);
         } else {
+
             //Draw world
+            map.drawBackground(display);
             player.draw(display);
             enemies.draw(display);
-            map.draw(display);
-           infobox.draw(display);
+            map.drawForeground(display);
+
+            //Draw overlay
+            infobox.draw(display);
             for (i in menu){
                 menu[i].draw(display);
             }
