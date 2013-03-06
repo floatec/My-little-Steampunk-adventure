@@ -30,7 +30,8 @@ var ITEM_GUN="_g";
 var ITEM_SPRING="_sp";
 var ITEM_NONE="_n";
 var ITEM_ACTIVATED="_a";
-var INFO_TIME=5;
+var INFO_TIME=2;
+var TILE_SIZE=16;
 var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 
@@ -42,7 +43,7 @@ var infobox =new Info(" ");
 
 var triggertActions=[]
 addTriggeredAction(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");})
-
+addTriggeredAction(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Press W to jump");})
 
 function addTriggeredAction(rect,callback){
     var obj={callback:callback,rect:rect};
@@ -247,6 +248,7 @@ function main() {
     enemies = new gamejs.sprite.Group();
     var createEnemy = function(pos) { enemies.add(new Enemy(pos)); };
     var splashScreen = new SplashScreen();
+    splashScreen.showSplash=false;
     var menu = [];
 
     //Initialize map
