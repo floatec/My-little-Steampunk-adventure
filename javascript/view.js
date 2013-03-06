@@ -1,7 +1,9 @@
 var gamejs = require('gamejs');
 var tmx = require('gamejs/tmx');
 
-//var CAMERA_THRESHOLD = 50;
+var WIDTH = 800; //TODO pass by parameter
+var CAMERA_THRESHOLD = 16;
+var CAMERA_MOVE_OFFSET = 32;
 
 /**
  * Loads the tmx at the given URL and holds all layers.
@@ -10,10 +12,6 @@ var Map = exports.Map = function(url) {
 	
 	var offset = [0, 0];
 	var map = new tmx.Map(url);
-
-	//TODO
-	var viewport;
-	var camera;
 
 	var layerViews = map.layers.map(function(layer) {
 		return new LayerView(layer, {
@@ -40,10 +38,17 @@ var Map = exports.Map = function(url) {
 	};
 	
 	this.update = function(dt, player) {
-	
-		var pos = player.rect.center;
-		
-		//TODO
+
+        //Scroll to the right
+        if (player.rect.right > WIDTH - offset[0]) {
+            offset[0] -= WIDTH - CAMERA_MOVE_OFFSET;
+            player.rect.right = CAMERA_MOVE_OFFSET;
+        }
+        //Scroll to the left
+        else if (player.rect.left < 0) {
+            offset[0] += WIDTH - CAMERA_MOVE_OFFSET;
+            player.rect.left = WIDTH - CAMERA_MOVE_OFFSET;
+        }
 	};
 	
 	this.draw = function(display) { 

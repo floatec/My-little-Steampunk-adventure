@@ -19,7 +19,7 @@ var ITEM_SPRING="_sp";
 var ITEM_NONE="_n";
 var ITEM_ACTIVATED="_a";
 var ITEM_KEYS={none:gamejs.event.K_1,swort:gamejs.event.K_2,
-               spring:gamejs.event.K_4,gun:gamejs.event.K_3};
+    spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 var map;
 
 function Item(name,position,handle) {
