@@ -27,15 +27,17 @@ var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
 var map;
 var triggertActions=[]
 addTriggeredAction([96,192])
+var infobox =new Info("");
 
 function addTriggeredAction(position,callback){
-    triggeredActions.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
+    triggertActions.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
+
 }
 function checkforTriggeredAction(player){
     for(action in triggertActions){
-        if(player.rect.collideRect(action.rect)){
+      /*  if(player.rect.collideRect(action.rect)){
             action.callback();
-        }
+        }*/
     }
 }
 
