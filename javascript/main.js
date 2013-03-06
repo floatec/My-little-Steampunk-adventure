@@ -7,6 +7,9 @@ gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.
     './data/_s.png','./data/_s_a.png', './data/_g_a.png',
     './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png', './data/box.png','./data/_n_a.png','./data/gameover.png' ]);
 
+//Cheats
+var DEBUG = true;
+
 //Font
 var font = new gamejs.font.Font("12px Verdana");
 
@@ -251,6 +254,13 @@ function Player(position) {
             if (event.key === ITEM_KEYS.none&&player.isInInventory(ITEM_NONE)) {
                 this.item = ITEM_NONE;
             }
+            //Cheats
+            if (DEBUG) {
+                if (event.key === gamejs.event.K_LEFT) { this.rect.left -= 10; }
+                if (event.key === gamejs.event.K_RIGHT) { this.rect.left += 10; }
+                if (event.key === gamejs.event.K_UP) { this.rect.top -= 100; }
+                if (event.key === gamejs.event.K_DOWN) { this.rect.top += 100; }
+            }
         }
         else if (event.type === gamejs.event.KEY_UP) {
             if (event.key === gamejs.event.K_a) this.xDir = 0;
@@ -271,7 +281,7 @@ function Player(position) {
         this.image = gamejs.image.load('./data/player' + this.dir + this.item + '.png');
 
         //Kill
-        if (map.hitsKillingObject(this)) {
+        if (!DEBUG && map.hitsKillingObject(this)) {
             this.alive = false;
         }
     };
