@@ -25,9 +25,10 @@ var INFO_TIME=5;
 var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 var map;
+
 var triggertActions=[]
 addTriggeredAction([96,192])
-var infobox =new Info("");
+var infobox =new Info(" ");
 
 function addTriggeredAction(position,callback){
     triggertActions.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
@@ -56,7 +57,6 @@ function Info(text){
         display.blit(this.infobox,this.pos)
         }
     }
-
 }
 
 function Item(name,position,handle) {
@@ -82,7 +82,6 @@ function Item(name,position,handle) {
 
     this.handle = handle;
 };
-
 gamejs.utils.objects.extend(Item, gamejs.sprite.Sprite);
 
 function SplashScreen() {
@@ -262,7 +261,7 @@ function main() {
         }
     });
     menu[ITEM_SWORD].active();
-    var infobox=new Info("Test");
+
     //The gameloop
     function gameTick(gameTime) {
 
@@ -306,6 +305,7 @@ function main() {
         } else {
             //Draw world
             player.draw(display);
+            enemies.draw(display);
             map.draw(display);
            infobox.draw(display);
             for (i in menu){
