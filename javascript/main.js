@@ -13,6 +13,7 @@ var font = new gamejs.font.Font("12px Verdana");
 //Level
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
+var CAMERA_MOVE_OFFSET = 32;
 var TMX_FILE = './data/testlevel.tmx';
 
 //Physics
@@ -34,7 +35,6 @@ var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 
 //Misc
-var CAMERA_MOVE_OFFSET = 32;
 var map;
 var player;
 var enemies;
@@ -201,10 +201,9 @@ function Player(position) {
         else if (this.velocity > 0) {
             this.velocity = 0;
         }
+        map.move(this, 0, this.velocity);
 
         this.image = gamejs.image.load('./data/player'+this.dir+this.item+'.png');
-
-        map.move(this, 0, this.velocity);
 
         if (map.hitsKillingObject(this)) {
             this.alive = false;
@@ -220,8 +219,20 @@ function Enemy(pos) {
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect([pos[0], pos[1] - 16], this.size);
 
+    this.speed = 50;
+    this.direction = 1;
+    this.health = 2;
+
     this.update = function(dt) {
 
+        var x = this.speed * this.direction * dt;
+
+        if (map.canMove(this, x, 0)) {
+            map.move(this, x, 0);
+        }
+        else {
+            this.direction *= -1;
+        }
     };
 }
 gamejs.utils.objects.extend(Enemy, gamejs.sprite.Sprite);
@@ -234,9 +245,7 @@ function main() {
     //Initialize variables
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
-    var createEnemy = function(pos) {
-      enemies.add(new Enemy(pos));
-    };
+    var createEnemy = function(pos) { enemies.add(new Enemy(pos)); };
     var splashScreen = new SplashScreen();
     var menu = [];
 
@@ -363,7 +372,7 @@ function updateScroll() {
     if (x != 0 || y != 0) {
 
         map.moveOffset(x, y);
-        enemies.forEach(function(enemy) {enemy.rect.moveIp(x, y);})
+        enemies.forEach(function(enemy) { enemy.rect.moveIp(x, y); })
     }
 }
 
