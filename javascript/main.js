@@ -5,7 +5,7 @@ gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.
     './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
     './data/player_l_sp.png', './data/hero.png','./data/splash.png',
     './data/_s.png','./data/_s_a.png', './data/_g_a.png',
-    './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png','./data/_n_a.png','./data/gameover.png' ]);
+    './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png', './data/box.png','./data/_n_a.png','./data/gameover.png' ]);
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
