@@ -62,6 +62,7 @@ function SplashScreen() {
     this.rect = new gamejs.Rect([0,0], this.size);
     this.gameover=false;
     this.setGameOver=function(){
+        this.gameover=true;
         this.image = gamejs.image.load("./data/gameover.png");
     }
 
