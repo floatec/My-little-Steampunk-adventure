@@ -143,14 +143,14 @@ function Entity() {
     this.isAtGround = false;
 
     this.updatePhysics = function(dt) {
-        this.isAtGround = !map.canMove(this, 0, 1);
+        this.isAtGround = !map.canMove(this, 0, 0.01);
 
         //Calculate new Y
         if (!this.isAtGround) {
             this.velocity += GRAVITY * dt;
 
             //Collide with ceiling
-            if (this.velocity < 0 && !map.canMove(this, 0, -1)) {
+            if (this.velocity < 0 && !map.canMove(this, 0, -0.01)) {
                 this.velocity = 0;
             }
         }
@@ -176,10 +176,9 @@ function Player(position) {
     //State variables
     this.speed = 200;
     this.xDir = 0;
-    this.isAtGround = false;
     this.dir = DIR_RIGHT;
     this.item = ITEM_SWORD;
-    this.alive=true;
+    this.alive = true;
 
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
