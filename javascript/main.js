@@ -41,37 +41,42 @@ var player;
 var enemies;
 var infobox =new Info(" ");
 
-var triggertActions=[]
-addTriggeredAction(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");})
-addTriggeredAction(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Press W to jump");})
+var triggers=[]
+addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");})
+addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Press W to jump");})
 
-function addTriggeredAction(rect,callback){
-    var obj={callback:callback,rect:rect};
-    triggertActions.push(obj);
-
+function addTrigger(rect, callback){
+    var obj = { callback:callback, rect:rect };
+    triggers.push(obj);
 }
-function checkforTriggeredAction(){
-    for(action in triggertActions){
 
-        if(player.rect.collideRect(triggertActions[action].rect)){
-            triggertActions[action].callback();
+function checkForTrigger() {
+
+    triggers.forEach( function(trigger) {
+        if(player.rect.collideRect(trigger.rect)){
+            trigger.callback();
         }
-    }
+    });
 }
 
 function Info(text){
+
     this.pos=[0,0];
     this.existingTime=0;
     this.infobox = font.render(text, "rgba(255,255,255,1)");
-   this.update=function(dt){
+
+    this.update = function(dt) {
+
        this.pos=player.rect.topleft;
-       this.pos[1]-=20;
-       this.existingTime+=dt;
-   }
-    this.draw=function(display){
-        if(this.existingTime<=INFO_TIME){
-        gamejs.draw.rect(display, "rgba(0,0,0,1)", 120, 0);
-        display.blit(this.infobox,this.pos)
+       this.pos[1] -= 20;
+       this.existingTime += dt;
+    }
+
+    this.draw = function(display) {
+
+        if(this.existingTime <= INFO_TIME){
+            gamejs.draw.rect(display, "rgba(0,0,0,1)", 120, 0);
+            display.blit(this.infobox, this.pos)
         }
     }
 }
@@ -85,11 +90,11 @@ function Item(name,position,handle) {
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect(position, this.size);
 
-    this.active = function(){
+    this.active = function() {
         this.image = gamejs.image.load("./data/" + this.name + ITEM_ACTIVATED + ".png");
     }
 
-    this.deactive = function(){
+    this.deactivate = function() {
         this.image = gamejs.image.load("./data/" + this.name + ".png");
     }
 
@@ -153,26 +158,26 @@ function Player(position) {
         if (event.type === gamejs.event.KEY_DOWN) {
             if (event.key === gamejs.event.K_a && this.xDir == 0) {
                 this.xDir = -1 * (this.item==ITEM_NONE ? 2 : 1);
-                this.dir=DIR_LEFT;
+                this.dir = DIR_LEFT;
             }
             if (event.key === gamejs.event.K_d && this.xDir == 0) {
                 this.xDir = (this.item==ITEM_NONE ? 2 : 1);
-                this.dir =DIR_RIGHT;
+                this.dir = DIR_RIGHT;
             }
             if (event.key === gamejs.event.K_w && this.isAtGround) {
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
             }
             if (event.key === ITEM_KEYS.sword) {
-                this.item=ITEM_SWORD;
+                this.item = ITEM_SWORD;
             }
             if (event.key === ITEM_KEYS.gun) {
-                this.item=ITEM_GUN;
+                this.item = ITEM_GUN;
             }
             if (event.key === ITEM_KEYS.spring) {
-                this.item=ITEM_SPRING;
+                this.item = ITEM_SPRING;
             }
             if (event.key === ITEM_KEYS.none) {
-                this.item=ITEM_NONE;
+                this.item = ITEM_NONE;
             }
         }
         else if (event.type === gamejs.event.KEY_UP) {
@@ -257,32 +262,32 @@ function main() {
 
     menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
         if (event.key === ITEM_KEYS.gun) {
-            for(i in menu){
-                menu[i].deactive();
+            for (i in menu) {
+                menu[i].deactivate();
             }
             menu[ITEM_GUN].active();
         }
     });
     menu[ITEM_SPRING]=new Item(ITEM_SPRING,[64+32+20,5],function(event){
         if (event.key === ITEM_KEYS.spring) {
-            for(i in menu){
-                menu[i].deactive();
+            for (i in menu) {
+                menu[i].deactivate();
             }
             menu[ITEM_SPRING].active();
         }
     });
     menu[ITEM_SWORD]=new Item(ITEM_SWORD,[32+10,5],function(event){
         if (event.key === ITEM_KEYS.sword) {
-            for(i in menu){
-                menu[i].deactive();
+            for (i in menu) {
+                menu[i].deactivate();
             }
             menu[ITEM_SWORD].active();
         }
     });
     menu[ITEM_NONE]=new Item(ITEM_NONE,[5,5],function(event){
         if (event.key === ITEM_KEYS.none) {
-            for(i in menu){
-                menu[i].deactive();
+            for (i in menu) {
+                menu[i].deactivate();
             }
             menu[ITEM_NONE].active();
         }
@@ -316,7 +321,7 @@ function main() {
         //Update world
         player.update(dt);
         enemies.update(dt);
-        checkforTriggeredAction();
+        checkForTrigger();
         infobox.update(dt);
         map.update(dt);
         updateScroll();
@@ -375,6 +380,11 @@ function updateScroll() {
 
         map.moveOffset(x, y);
         enemies.forEach(function(enemy) { enemy.rect.moveIp(x, y); })
+
+        triggers.forEach(function(trigger) {
+            trigger.rect.left += x;
+            trigger.rect.top += y;
+        });
     }
 }
 
