@@ -10,21 +10,34 @@ gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.
 //Font
 var font = new gamejs.font.Font("12px Verdana");
 
+//Level
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
+var TMX_FILE = './data/scrollingtest.tmx';
+
+//Physics
 var GRAVITY = 2;
 var JUMP_IMPULSE = 15;
+
+//Player
 var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
+
+//Items
 var ITEM_SWORD="_s";
 var ITEM_GUN="_g";
 var ITEM_SPRING="_sp";
 var ITEM_NONE="_n";
 var ITEM_ACTIVATED="_a";
-var INFO_TIME=5;
 var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
+
+//Misc
+var CAMERA_MOVE_OFFSET = 32;
+var INFO_TIME = 5;
 var map;
+var player;
+var enemies;
 
 var triggertActions=[]
 addTriggeredAction([96,192])
@@ -34,7 +47,7 @@ function addTriggeredAction(position,callback){
     triggertActions.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
 
 }
-function checkforTriggeredAction(player){
+function checkforTriggeredAction(){
     for(action in triggertActions){
       /*  if(player.rect.collideRect(action.rect)){
             action.callback();
@@ -46,7 +59,7 @@ function Info(text){
     this.pos=[0,0];
     this.existingTime=0;
     this.infobox = font.render(text, "rgba(255,255,255,1)");
-   this.update=function(dt,player){
+   this.update=function(dt){
        this.pos=player.rect.topleft;
        this.pos[1]-=20;
        this.existingTime+=dt;
@@ -81,7 +94,7 @@ function Item(name,position,handle) {
     };
 
     this.handle = handle;
-};
+}
 gamejs.utils.objects.extend(Item, gamejs.sprite.Sprite);
 
 function SplashScreen() {
@@ -102,7 +115,7 @@ function SplashScreen() {
 
     };
 
-    this.handle = function(event,player) {
+    this.handle = function(event) {
 
         if (event.type === gamejs.event.MOUSE_DOWN) {
             this.showSplash=false;
@@ -111,7 +124,7 @@ function SplashScreen() {
             }
         }
     };
-};
+}
 gamejs.utils.objects.extend(SplashScreen, gamejs.sprite.Sprite);
 
 function Player(position) {
@@ -139,7 +152,7 @@ function Player(position) {
                 this.dir=DIR_LEFT;
             }
             if (event.key === gamejs.event.K_d && this.xDir == 0) {
-                this.xDir = 1 * (this.item==ITEM_NONE ? 2 : 1);
+                this.xDir = (this.item==ITEM_NONE ? 2 : 1);
                 this.dir =DIR_RIGHT;
             }
             if (event.key === gamejs.event.K_w && this.isAtGround) {
@@ -194,7 +207,7 @@ function Player(position) {
             this.alive = false;
         }
     };
-};
+}
 gamejs.utils.objects.extend(Player, gamejs.sprite.Sprite);
 
 function Enemy(pos) {
@@ -207,7 +220,7 @@ function Enemy(pos) {
     this.update = function(dt) {
 
     };
-};
+}
 gamejs.utils.objects.extend(Enemy, gamejs.sprite.Sprite);
 
 function main() {
@@ -216,8 +229,8 @@ function main() {
     var display = gamejs.display.setMode([SCREEN_WIDTH, SCREEN_HEIGHT]);
 
     //Initialize variables
-    var player = new Player([96, 48]);
-    var enemies = new gamejs.sprite.Group();
+    player = new Player([96, 48]);
+    enemies = new gamejs.sprite.Group();
     var createEnemy = function(pos) {
       enemies.add(new Enemy(pos));
     };
@@ -225,7 +238,7 @@ function main() {
     var menu = [];
 
     //Initialize map
-    map = new view.Map('./data/testlevel.tmx');
+    map = new view.Map(TMX_FILE);
     map.loadObjects(createEnemy);
 
     menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
@@ -267,7 +280,7 @@ function main() {
 
         update(gameTime);
         draw();
-    };
+    }
     gamejs.time.interval(gameTick, 30, this);
 
     function update(gameTime) {
@@ -289,9 +302,10 @@ function main() {
         //Update world
         player.update(dt);
         enemies.update(dt);
-        checkforTriggeredAction(player);
-        infobox.update(dt,player);
-        map.update(dt, player);
+        checkforTriggeredAction();
+        infobox.update(dt);
+        map.update(dt);
+        updateScroll();
     }
 
     function draw() {
@@ -314,7 +328,41 @@ function main() {
         }
 
     }
-};
+}
+
+function updateScroll() {
+
+    var x = 0;
+    var y = 0;
+
+    //Scroll to the right
+    if (player.rect.right > SCREEN_WIDTH) {
+        x = - SCREEN_WIDTH + CAMERA_MOVE_OFFSET;
+        player.rect.right = CAMERA_MOVE_OFFSET;
+    }
+    //Scroll to the left
+    else if (player.rect.left < 0) {
+        x = SCREEN_WIDTH - CAMERA_MOVE_OFFSET;
+        player.rect.left = SCREEN_WIDTH - CAMERA_MOVE_OFFSET;
+    }
+
+    //Scroll down
+    if (player.rect.bottom > SCREEN_HEIGHT) {
+        y = - SCREEN_HEIGHT + CAMERA_MOVE_OFFSET;
+        player.rect.bottom = CAMERA_MOVE_OFFSET;
+    }
+    //Scroll up
+    else if (player.rect.top < 0) {
+        y = SCREEN_HEIGHT - CAMERA_MOVE_OFFSET;
+        player.rect.top = SCREEN_HEIGHT - CAMERA_MOVE_OFFSET;
+    }
+
+    if (x != 0 || y != 0) {
+
+        map.moveOffset(x, y);
+        enemies.forEach(function(enemy) {enemy.rect.moveIp(x, y);})
+    }
+}
 
 //Start game
 gamejs.ready(main);

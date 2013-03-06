@@ -1,10 +1,6 @@
 var gamejs = require('gamejs');
 var tmx = require('gamejs/tmx');
 
-//TODO pass by parameter
-var WIDTH = 800;
-var HEIGHT = 480;
-var CAMERA_MOVE_OFFSET = 32;
 
 /**
  * Loads the tmx at the given URL and holds all layers.
@@ -25,6 +21,7 @@ var Map = exports.Map = function(url) {
 	});
 
     this.loadObjects = function(callback) {
+
         for (var y = 0; y < map.height; y++) {
             for (var x = 0; x < map.width; x++) {
 
@@ -38,29 +35,8 @@ var Map = exports.Map = function(url) {
         }
     }
 	
-	this.update = function(dt, player) {
+	this.update = function(dt) {
 
-        //Scroll to the right
-        if (player.rect.right > WIDTH) {
-            offset[0] -= WIDTH - CAMERA_MOVE_OFFSET;
-            player.rect.right = CAMERA_MOVE_OFFSET;
-        }
-        //Scroll to the left
-        else if (player.rect.left < 0) {
-            offset[0] += WIDTH - CAMERA_MOVE_OFFSET;
-            player.rect.left = WIDTH - CAMERA_MOVE_OFFSET;
-        }
-
-        //Scroll down
-        if (player.rect.bottom > HEIGHT) {
-            offset[1] -= HEIGHT - CAMERA_MOVE_OFFSET;
-            player.rect.bottom = CAMERA_MOVE_OFFSET;
-        }
-        //Scroll up
-        else if (player.rect.top < 0) {
-            offset[1] += HEIGHT - CAMERA_MOVE_OFFSET;
-            player.rect.top = HEIGHT - CAMERA_MOVE_OFFSET;
-        }
 	};
 	
 	this.draw = function(display) {
@@ -68,6 +44,11 @@ var Map = exports.Map = function(url) {
         //Draw only first layer
         layerViews[0].draw(display, offset);
 	};
+
+    this.moveOffset = function(x, y) {
+        offset[0] += x;
+        offset[1] += y;
+    }
 
 
     this.getTileIndex = function(pos) {
