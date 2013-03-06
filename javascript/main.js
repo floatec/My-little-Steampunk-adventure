@@ -113,7 +113,6 @@ function SplashScreen() {
 };
 gamejs.utils.objects.extend(SplashScreen, gamejs.sprite.Sprite);
 
-
 function Player(position) {
     Player.superConstructor.apply(this, arguments);
 
@@ -197,16 +196,37 @@ function Player(position) {
 };
 gamejs.utils.objects.extend(Player, gamejs.sprite.Sprite);
 
+function Enemy(pos) {
+    Enemy.superConstructor.apply(this, arguments);
+
+    this.image = gamejs.image.load('./data/player_r_n.png');
+    this.size = this.image.getSize();
+    this.rect = new gamejs.Rect([pos[0], pos[1] - 16], this.size);
+
+    this.update = function(dt) {
+
+    };
+};
+gamejs.utils.objects.extend(Enemy, gamejs.sprite.Sprite);
+
 function main() {
 
     //Initialize screen
     var display = gamejs.display.setMode([SCREEN_WIDTH, SCREEN_HEIGHT]);
 
     //Initialize variables
-    map = new view.Map('./data/testlevel.tmx');
     var player = new Player([96, 48]);
+    var enemies = new gamejs.sprite.Group();
+    var createEnemy = function(pos) {
+      enemies.add(new Enemy(pos));
+    };
     var splashScreen = new SplashScreen();
-    var menu=[];
+    var menu = [];
+
+    //Initialize map
+    map = new view.Map('./data/testlevel.tmx');
+    map.loadObjects(createEnemy);
+
     menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
         if (event.key === ITEM_KEYS.gun) {
             for(i in menu){
@@ -240,7 +260,7 @@ function main() {
         }
     });
     menu[ITEM_SWORD].active();
-
+    var infobox=new Info("Test");
     //The gameloop
     function gameTick(gameTime) {
 
@@ -267,6 +287,7 @@ function main() {
 
         //Update world
         player.update(dt);
+        enemies.update(dt);
         checkforTriggeredAction(player);
         infobox.update(dt,player);
         map.update(dt, player);

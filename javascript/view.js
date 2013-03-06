@@ -23,6 +23,20 @@ var Map = exports.Map = function(url) {
 			tiles: map.tiles
 		});
 	});
+
+    this.loadObjects = function(callback) {
+        for (var y = 0; y < map.height; y++) {
+            for (var x = 0; x < map.width; x++) {
+
+                var properties = map.tiles.getProperties(map.layers[1].gids[y][x]);
+                for (p in properties) {
+                    if (p === "enemy1") {
+                        callback([x * map.tileWidth, y * map.tileHeight]);
+                    }
+                }
+            }
+        }
+    }
 	
 	this.update = function(dt, player) {
 
@@ -49,10 +63,10 @@ var Map = exports.Map = function(url) {
         }
 	};
 	
-	this.draw = function(display) { 
-		layerViews.forEach(function(layerView) {
-			layerView.draw(display, offset);
-		}, this);
+	this.draw = function(display) {
+
+        //Draw only first layer
+        layerViews[0].draw(display, offset);
 	};
 
 
