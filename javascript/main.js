@@ -13,6 +13,7 @@ var font = new gamejs.font.Font("12px Verdana");
 //Level
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
+var TILE_SIZE = 16;
 var CAMERA_MOVE_OFFSET = 32;
 var TMX_FILE = './data/testlevel.tmx';
 
@@ -25,29 +26,33 @@ var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
 
 //Items
-var ITEM_SWORD="_s";
-var ITEM_GUN="_g";
-var ITEM_SPRING="_sp";
-var ITEM_NONE="_n";
-var ITEM_ACTIVATED="_a";
-var INFO_TIME=2;
-var TILE_SIZE=16;
-var ITEM_KEYS={none:gamejs.event.K_4,sword:gamejs.event.K_1,
-    spring:gamejs.event.K_2,gun:gamejs.event.K_3};
+var ITEM_SWORD = "_s";
+var ITEM_GUN = "_g";
+var ITEM_SPRING = "_sp";
+var ITEM_NONE = "_n";
+var ITEM_ACTIVATED = "_a";
+var INFO_TIME = 2;
+var ITEM_KEYS = {
+    none : gamejs.event.K_4,
+    sword : gamejs.event.K_1,
+    spring : gamejs.event.K_2,
+    gun : gamejs.event.K_3
+};
 
 //Misc
 var map;
 var player;
 var enemies;
-var infobox =new Info(" ");
-var menu=[];
-var triggers=[]
-addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");})
-addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Press W to jump");})
+var infobox = new Info(" ");
+var menu = [];
+var triggers = [];
+
+addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");});
+addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Press W to jump");});
 addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
-    infobox =new Info("Ohh some Springs!\n(switch with 1 and 2 your item)");
+    infobox = new Info("Ohh some Springs!\n(switch with 1 and 2 your item)");
     player.inventory.push(ITEM_SPRING);
-    menu[ITEM_SPRING]=new Item(ITEM_SPRING,[32+10,5],function(event){
+    menu[ITEM_SPRING] = new Item(ITEM_SPRING, [32+10,5], function(event) {
         if (event.key === ITEM_KEYS.spring) {
             for (i in menu) {
                 menu[i].deactivate();
@@ -56,7 +61,7 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
             console.log(menu);
         }
     });
-})
+});
 
 /*menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
  if (event.key === ITEM_KEYS.gun) {
@@ -143,12 +148,12 @@ function SplashScreen() {
     this.image = gamejs.image.load("./data/splash.png");
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect([0,0], this.size);
-    this.gameover=false;
+    this.gameover = false;
 
-    this.setGameOver=function(){
-        this.gameover=true;
+    this.setGameOver = function() {
+        this.gameover = true;
         this.image = gamejs.image.load("./data/gameover.png");
-    }
+    };
 
     this.update = function(dt) {
 
@@ -205,22 +210,21 @@ function Player(position) {
 
     //State variables
     this.speed = 200;
-    this.velocity = 0;
     this.xDir = 0;
-    this.isAtGround = false;
-    this.dir=DIR_RIGHT;
-    this.item=ITEM_SWORD;
-    this.alive=true;
-    this.inventory=[];
+    this.dir = DIR_RIGHT;
+    this.item = ITEM_SWORD;
+    this.alive = true;
+    this.inventory = [];
     this.inventory.push(ITEM_SWORD);
-    this.isInInventory=function(item){
-        for(i in this.inventory){
-            if(item==this.inventory[i]){
+
+    this.isInInventory = function(item) {
+        for(i in this.inventory) {
+            if(item == this.inventory[i]){
                 return true;
             }
         }
         return false;
-    }
+    };
 
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
@@ -328,7 +332,6 @@ function main() {
     map = new view.Map(TMX_FILE);
     map.loadObjects(createEnemy);
 
-
     menu[ITEM_SWORD]=new Item(ITEM_SWORD,[0+5,5],function(event){
         if (event.key === ITEM_KEYS.sword) {
             for (i in menu) {
@@ -381,7 +384,8 @@ function main() {
         if (splashScreen.showSplash||!player.alive){
 
             splashScreen.draw(display);
-        } else {
+        }
+        else {
 
             //Draw world
             map.drawBackground(display);
