@@ -25,6 +25,19 @@ var INFO_TIME=5;
 var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 var map;
+var triggertActions=[]
+addTriggeredAction([96,192])
+
+function addTriggeredAction(position,callback){
+    triggeredAction.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
+}
+function checkforTriggeredAction(player){
+    for(action in triggertActions){
+        if(player.rect.collideRect(action.rect)){
+            action.callback();
+        }
+    }
+}
 
 function Info(text){
     this.pos=[0,0];
@@ -227,7 +240,7 @@ function main() {
         }
     });
     menu[ITEM_SWORD].active();
-    var infobox=new Info("Test");
+
     //The gameloop
     function gameTick(gameTime) {
 
@@ -254,6 +267,7 @@ function main() {
 
         //Update world
         player.update(dt);
+        checkforTriggeredAction(player);
         infobox.update(dt,player);
         map.update(dt, player);
     }
