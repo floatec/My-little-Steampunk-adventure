@@ -13,7 +13,7 @@ var font = new gamejs.font.Font("12px Verdana");
 //Level
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
-var TMX_FILE = './data/scrollingtest.tmx';
+var TMX_FILE = './data/testlevel.tmx';
 
 //Physics
 var GRAVITY = 2;
@@ -35,7 +35,6 @@ var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
 
 //Misc
 var CAMERA_MOVE_OFFSET = 32;
-var INFO_TIME = 5;
 var map;
 var player;
 var enemies;
@@ -44,18 +43,16 @@ var infobox =new Info(" ");
 var triggertActions=[]
 addTriggeredAction(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");})
 
-function addTriggeredAction(position,callback){
-    triggertActions.push({callback:callback,rect:new gamejs.Rect(position, [32,32])});
 
 function addTriggeredAction(rect,callback){
     var obj={callback:callback,rect:rect};
     triggertActions.push(obj);
 
 }
-function checkforTriggeredAction(player){
+function checkforTriggeredAction(){
     for(action in triggertActions){
 
-      if(player.rect.collideRect(triggertActions[action].rect)){
+        if(player.rect.collideRect(triggertActions[action].rect)){
             triggertActions[action].callback();
         }
     }
