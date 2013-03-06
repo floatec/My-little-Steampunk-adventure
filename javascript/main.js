@@ -7,6 +7,9 @@ gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.
     './data/_s.png','./data/_s_a.png', './data/_g_a.png',
     './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png','./data/_n_a.png','./data/gameover.png' ]);
 
+//Font
+var font = new gamejs.font.Font("12px Verdana");
+
 var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
 var GRAVITY = 2;
@@ -18,9 +21,28 @@ var ITEM_GUN="_g";
 var ITEM_SPRING="_sp";
 var ITEM_NONE="_n";
 var ITEM_ACTIVATED="_a";
+var INFO_TIME=5;
 var ITEM_KEYS={none:gamejs.event.K_1,sword:gamejs.event.K_2,
     spring:gamejs.event.K_4,gun:gamejs.event.K_3};
 var map;
+
+function Info(text){
+    this.pos=[0,0];
+    this.existingTime=0;
+    this.infobox = font.render(text, "rgba(255,255,255,1)");
+   this.update=function(dt,player){
+       this.pos=player.rect.topleft;
+       this.pos[1]-=20;
+       this.existingTime+=dt;
+   }
+    this.draw=function(display){
+        if(this.existingTime<=INFO_TIME){
+        gamejs.draw.rect(display, "rgba(0,0,0,1)", 120, 0);
+        display.blit(this.infobox,this.pos)
+        }
+    }
+
+}
 
 function Item(name,position,handle) {
     this.active = false;
@@ -205,6 +227,7 @@ function main() {
         }
     });
     menu[ITEM_SWORD].active();
+    var infobox=new Info("Test");
     //The gameloop
     function gameTick(gameTime) {
 
@@ -230,7 +253,8 @@ function main() {
         }
 
         //Update world
-        player.update(dt)
+        player.update(dt);
+        infobox.update(dt,player);
         map.update(dt, player);
     }
 
@@ -246,7 +270,7 @@ function main() {
             //Draw world
             player.draw(display);
             map.draw(display);
-
+           infobox.draw(display);
             for (i in menu){
                 menu[i].draw(display);
             }
