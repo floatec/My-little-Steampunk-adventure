@@ -83,6 +83,7 @@ var ITEM_KEYS = {
 var map;
 var player;
 var enemies;
+var weapons;
 var infobox ;
 var menu = [];
 var triggers = [];
@@ -221,6 +222,7 @@ function Entity(health) {
     this.isAtGround = false;
 
     this.damageBy = function(value) {
+
         this.health -= value;
 
         if (this.health <= 0) {
@@ -260,8 +262,8 @@ function Player(position) {
 
     //State variables
     this.health = PLAYER_HEALTH;
-    this.xDir = 0;
-    this.dir = DIR_RIGHT;
+    this.direction = 0;
+    this.move = false;
     this.item = ITEM_SWORD;
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
@@ -277,29 +279,33 @@ function Player(position) {
 
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
-            if (event.key === gamejs.event.K_a && this.xDir == 0) {
-                this.xDir = -1 * (this.item==ITEM_NONE ? 2 : 1);
-                this.dir = DIR_LEFT;
+            if (event.key === gamejs.event.K_a && !this.move) {
+                this.direction = -1 * (this.item==ITEM_NONE ? 2 : 1);
+                this.move = true;
             }
-            if (event.key === gamejs.event.K_d && this.xDir == 0) {
-                this.xDir = (this.item==ITEM_NONE ? 2 : 1);
-                this.dir = DIR_RIGHT;
+            else if (event.key === gamejs.event.K_d && !this.move) {
+                this.direction = (this.item==ITEM_NONE ? 2 : 1);
+                this.move = true;
             }
-            if (event.key === gamejs.event.K_w && this.isAtGround) {
+            else if (event.key === gamejs.event.K_w && this.isAtGround) {
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
             }
-            if (event.key === ITEM_KEYS.sword&&player.isInInventory(ITEM_SWORD)) {
+            else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)) {
                 this.item = ITEM_SWORD;
             }
-            if (event.key === ITEM_KEYS.gun&&player.isInInventory(ITEM_GUN)) {
+            else if (event.key === ITEM_KEYS.gun && player.isInInventory(ITEM_GUN)) {
                 this.item = ITEM_GUN;
             }
-            if (event.key === ITEM_KEYS.spring&&player.isInInventory(ITEM_SPRING)) {
+            else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)) {
                 this.item = ITEM_SPRING;
             }
-            if (event.key === ITEM_KEYS.none&&player.isInInventory(ITEM_NONE)) {
+            else if (event.key === ITEM_KEYS.none && player.isInInventory(ITEM_NONE)) {
                 this.item = ITEM_NONE;
             }
+            else if (event.key === gamejs.event.K_SPACE && player.item === ITEM_SWORD) {
+                spawnWeapon(ITEM_SWORD);
+            }
+
             //Cheats
             if (WALLHACK) {
                 if (event.key === gamejs.event.K_LEFT) { this.rect.left -= 10; }
@@ -309,16 +315,18 @@ function Player(position) {
             }
         }
         else if (event.type === gamejs.event.KEY_UP) {
-            if (event.key === gamejs.event.K_a) this.xDir = 0;
-            if (event.key === gamejs.event.K_d) this.xDir = 0;
+            if (event.key === gamejs.event.K_a) this.move = false;
+            if (event.key === gamejs.event.K_d) this.move = false;
         }
     };
 
     this.update = function(dt) {
 
         //Calculate new X
-        var x = this.xDir * PLAYER_SPEED * dt;
-        map.move(this, x, 0);
+        if (this.move) {
+            var x = this.direction * PLAYER_SPEED * dt;
+            map.move(this, x, 0);
+        }
 
         //Falling etc.
         this.updatePhysics(dt);
@@ -332,7 +340,12 @@ function Player(position) {
         });
 
         //TODO Fix for performance
-        this.image = gamejs.image.load('./data/player' + this.dir + this.item + '.png');
+        if (player.direction > 0) {
+            this.image = gamejs.image.load('./data/player_r' + this.item + '.png');
+        }
+        else {
+            this.image = gamejs.image.load('./data/player_l' + this.item + '.png');
+        }
 
         //Kill
         if (map.hitsKillingObject(this) && !INVINCIBLE) {
@@ -342,7 +355,7 @@ function Player(position) {
 }
 gamejs.utils.objects.extend(Player, Entity);
 
-function Enemy(imagePath, pos, speed, health) {
+function Enemy(health, imagePath, pos, speed) {
     Enemy.superConstructor.apply(this, arguments);
 
     this.imageR = gamejs.image.load('./data/' + imagePath + '_r.png');
@@ -357,7 +370,7 @@ function Enemy(imagePath, pos, speed, health) {
 }
 gamejs.utils.objects.extend(Enemy, Entity);
 
-function WalkingEnemy(imagePath, pos, speed, health) {
+function WalkingEnemy(health, imagePath, pos, speed) {
 
     WalkingEnemy.superConstructor.apply(this, arguments);
 
@@ -380,7 +393,7 @@ function WalkingEnemy(imagePath, pos, speed, health) {
 }
 gamejs.utils.objects.extend(WalkingEnemy, Enemy);
 
-function FlyingEnemy(imagePath, pos, speed, health) {
+function FlyingEnemy(health, imagePath, pos, speed) {
 
     FlyingEnemy.superConstructor.apply(this, arguments);
 
@@ -400,6 +413,45 @@ function FlyingEnemy(imagePath, pos, speed, health) {
 }
 gamejs.utils.objects.extend(FlyingEnemy, Enemy);
 
+function Weapon(lifeTime, damage) {
+    Weapon.superConstructor.apply(this, arguments);
+
+    if (player.direction > 0) {
+        this.size = [TILE_SIZE * 2, TILE_SIZE * 2];
+        this.rect = new gamejs.Rect(player.rect.topright, this.size);
+    }
+    else {
+        this.size = [-TILE_SIZE * 2, TILE_SIZE * 2];
+        this.rect = new gamejs.Rect(player.rect.topleft, this.size);
+    }
+
+    this.damage = damage;
+    this.lifeTime = lifeTime;
+    this.existingTime = 0;
+
+    this.update = function(dt) {
+
+        gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(enemy) {
+
+            //TODO Variable damage
+            enemy.damageBy(1);
+        });
+
+        //Disappear
+        this.existingTime += dt;
+        if (this.existingTime >= this.lifeTime) {
+            this.kill();
+        }
+    };
+
+    this.draw = function(display) {
+
+       //TODO Show "animation" ?
+        gamejs.draw.rect(display, "rgba(255, 0, 0, 0.5)", this.rect, 0);
+    };
+}
+gamejs.utils.objects.extend(Weapon, gamejs.sprite.Sprite);
+
 function main() {
 
     //Initialize screen
@@ -408,6 +460,7 @@ function main() {
     //Initialize variables
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
+    weapons = new gamejs.sprite.Group();
     infobox = new Info("Hallo, I'm Julia");
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
@@ -415,7 +468,7 @@ function main() {
 
     //Initialize map
     map = new view.Map(TMX_FILE);
-    map.loadObjects(createEnemy);
+    map.loadObjects(spawnEnemy);
 
     menu[ITEM_SWORD]=new Item(ITEM_SWORD,[0+5,5],function(event){
         if (event.key === ITEM_KEYS.sword) {
@@ -454,6 +507,7 @@ function main() {
 
         //Update world
         player.update(dt);
+        weapons.update(dt);
         enemies.update(dt);
         checkForTrigger();
         infobox.update(dt);
@@ -476,6 +530,7 @@ function main() {
             map.drawBackground(display);
             player.draw(display);
             enemies.draw(display);
+            weapons.draw(display);
             map.drawTiles(display);
             map.drawForeground(display);
 
@@ -520,26 +575,32 @@ function updateScroll() {
 
         map.moveOffset(x, y);
         enemies.forEach(function(enemy) { enemy.rect.moveIp(x, y); })
-
-        triggers.forEach(function(trigger) {
-            trigger.rect.left += x;
-            trigger.rect.top += y;
-        });
+        triggers.forEach(function(trigger) { trigger.rect.moveIp(x, y); });
+        weapons.forEach(function(weapon) { weapon.rect.moveIp(x, y); });
     }
 }
 
-function createEnemy(type, pos) {
+function spawnEnemy(type, pos) {
 
     if (type === ENEMY_TYPES.easy) {
-        enemies.add(new WalkingEnemy("enemy_1", pos, 100, 1));
+        enemies.add(new WalkingEnemy(1, "enemy_1", pos, 100));
     }
     else if (type === ENEMY_TYPES.hard) {
-        enemies.add(new WalkingEnemy("enemy_2", pos, 80, 2));
+        enemies.add(new WalkingEnemy(2, "enemy_2", pos, 80));
     }
     else if (type === ENEMY_TYPES.flying) {
-        enemies.add(new FlyingEnemy("enemy_3", pos, 100, 1));
+        enemies.add(new FlyingEnemy(1, "enemy_3", pos, 100));
     }
 }
+
+function spawnWeapon(type) {
+
+    if (type === ITEM_SWORD) {
+        weapons.add(new Weapon(0.5, 1));
+    }
+}
+
+
 
 //Start game
 gamejs.ready(main);
