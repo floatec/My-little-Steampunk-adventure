@@ -37,6 +37,7 @@ gamejs.preload([
 //Cheats
 var WALLHACK = true;
 var INVINCIBLE = true;
+var ALL_ITEMS = true;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -57,6 +58,7 @@ var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
 var PLAYER_SPEED = 200;
 var PLAYER_HEALTH = 5;
+var JUMP_MULTIPILER = 1.8;
 
 //Enemies
 var ENEMY_TYPES = {
@@ -73,10 +75,10 @@ var ITEM_NONE = "_n";
 var ITEM_ACTIVATED = "_a";
 var INFO_TIME = 2;
 var ITEM_KEYS = {
-    none : gamejs.event.K_4,
+    none : gamejs.event.K_3,
     sword : gamejs.event.K_1,
     spring : gamejs.event.K_2,
-    gun : gamejs.event.K_3
+    gun : gamejs.event.K_4
 };
 
 //Misc
@@ -99,11 +101,29 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
                 menu[i].deactivate();
             }
             menu[ITEM_SPRING].active();
-            console.log(menu);
+
         }
     });
 });
+addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
+    if(typeof (menu[ITEM_NONE])!="String"){
+        infobox = new Info("Ohh lets put our items away(3)");
+        player.inventory.push(ITEM_NONE);
+        menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
+            if (event.key === ITEM_KEYS.none) {
+                for (i in menu) {
+                    menu[i].deactivate();
+                }
+                menu[ITEM_NONE].active();
 
+            }
+        });
+        player.item=ITEM_NONE;
+        menu[ITEM_NONE].active();
+    }
+
+});
+addTrigger(new gamejs.Rect([248*TILE_SIZE,3*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh I'm so fast!!!");});
 /*menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
  if (event.key === ITEM_KEYS.gun) {
  for (i in menu) {
@@ -267,6 +287,11 @@ function Player(position) {
     this.item = ITEM_SWORD;
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
+    if(ALL_ITEMS){
+        this.inventory[ITEM_GUN]=ITEM_GUN;
+        this.inventory[ITEM_NONE]=ITEM_NONE;
+        this.inventory[ITEM_SPRING]=ITEM_SPRING;
+    }
 
     this.isInInventory = function(item) {
         for(i in this.inventory) {
@@ -287,8 +312,10 @@ function Player(position) {
                 this.direction = (this.item==ITEM_NONE ? 2 : 1);
                 this.move = true;
             }
+
             else if (event.key === gamejs.event.K_w && this.isAtGround) {
-                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?2:1);
+                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
+
             }
             else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)) {
                 this.item = ITEM_SWORD;
