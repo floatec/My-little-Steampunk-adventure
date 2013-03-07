@@ -27,9 +27,7 @@ var Map = exports.Map = function(url) {
 
                 var properties = map.tiles.getProperties(map.layers[1].gids[y][x]);
                 for (p in properties) {
-                    if (p === "enemy1") {
-                        callback([x * map.tileWidth, y * map.tileHeight]);
-                    }
+                    callback(p, [x * map.tileWidth, y * map.tileHeight]);
                 }
             }
         }

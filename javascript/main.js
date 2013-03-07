@@ -3,7 +3,8 @@ var view = require('./view');
 
 gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.png', './data/player_r_s.png',
     './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
-    './data/player_l_sp.png', './data/enemy_l.png', './data/enemy_r.png', './data/hero.png','./data/splash.png',
+    './data/player_l_sp.png', './data/enemy_1_l.png', './data/enemy_1_r.png', './data/enemy_2_l.png', './data/enemy_2_r.png',
+    './data/enemy_3_l.png', './data/enemy_3_r.png', './data/hero.png','./data/splash.png',
     './data/_s.png','./data/_s_a.png', './data/_g_a.png','./data/steam.png',
     './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png', './data/box.png','./data/_n_a.png','./data/gameover.png' ]);
 
@@ -288,16 +289,25 @@ function Player(position) {
 }
 gamejs.utils.objects.extend(Player, Entity);
 
-function Enemy(pos) {
+function Enemy(imagePath, pos, speed, health) {
     Enemy.superConstructor.apply(this, arguments);
 
-    this.image = gamejs.image.load('./data/enemy_r.png');
-    this.size = this.image.getSize();
-    this.rect = new gamejs.Rect([pos[0], pos[1] - 16], this.size);
+    this.imageR = gamejs.image.load('./data/' + imagePath + '_r.png');
+    this.imageL = gamejs.image.load('./data/' + imagePath + '_l.png')
+    this.image = this.imageR;
 
-    this.speed = 80;
+    this.size = this.image.getSize();
+    this.rect = new gamejs.Rect([pos[0], pos[1] - TILE_SIZE], this.size);
+
     this.direction = 1;
-    this.health = 2;
+    this.speed = speed;
+    this.health = health;
+}
+gamejs.utils.objects.extend(Enemy, Entity);
+
+function WalkingEnemy(imagePath, pos, speed, health) {
+
+    WalkingEnemy.superConstructor.apply(this, arguments);
 
     this.update = function(dt) {
 
@@ -306,24 +316,17 @@ function Enemy(pos) {
         if (map.canMove(this, x, 0)) {
             map.move(this, x, 0);
         }
-
         //Change direction
         else {
             this.direction *= -1;
-
-            if (this.direction > 0) {
-                this.image = gamejs.image.load('./data/enemy_r.png');
-            }
-            else {
-                this.image = gamejs.image.load('./data/enemy_l.png');
-            }
+            this.direction > 0 ? this.image = this.imageR : this.image = this.imageL;
         }
 
         //Falling etc.
         this.updatePhysics(dt);
     };
 }
-gamejs.utils.objects.extend(Enemy, Entity);
+gamejs.utils.objects.extend(WalkingEnemy, Enemy);
 
 function main() {
 
@@ -333,7 +336,17 @@ function main() {
     //Initialize variables
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
-    var createEnemy = function(pos) { enemies.add(new Enemy(pos)); };
+
+    var createEnemy = function(type, pos) {
+
+        if (type === "enemy1") {
+            enemies.add(new WalkingEnemy("enemy_1", pos, 100, 2));
+        }
+        else if (type === "enemy2") {
+            enemies.add(new WalkingEnemy("enemy_2", pos, 150, 1));
+        }
+    };
+
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
     menu = [];

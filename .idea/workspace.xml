@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2fbd61bc-cde3-469a-8062-82add62d5c64" name="Default" comment="I">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/sass_stdlib.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="DELETED" beforePath="C:\Dokumente und Einstellungen\m.musch\Desktop\Gamejam\Web\gamejam\data\scrollingtest.tmx" afterPath="" />
+    <list default="true" id="2fbd61bc-cde3-469a-8062-82add62d5c64" name="Default" comment="Walking enemies">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/enemy_1_l.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/enemy_1_r.png" />
+      <change type="DELETED" beforePath="C:\Dokumente und Einstellungen\m.musch\Desktop\Gamejam\Web\gamejam\data\enemy_l.png" afterPath="" />
+      <change type="DELETED" beforePath="C:\Dokumente und Einstellungen\m.musch\Desktop\Gamejam\Web\gamejam\data\enemy_r.png" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/Thumbs.db" afterPath="$PROJECT_DIR$/data/Thumbs.db" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/javascript/main.js" afterPath="$PROJECT_DIR$/javascript/main.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/javascript/view.js" afterPath="$PROJECT_DIR$/javascript/view.js" />
     </list>
     <ignored path="gamejam.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,19 +29,26 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="main.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/javascript/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="193" column="31" selection-start="5659" selection-end="5659" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="26" column="0" selection-start="993" selection-end="993" vertical-scroll-proportion="0.5325301">
+              <folding>
+                <element signature="n#!!block;n#Info#0" expanded="false" />
+                <element signature="n#!!block;n#Item#0" expanded="false" />
+                <element signature="n#!!block;n#SplashScreen#0" expanded="false" />
+                <element signature="n#!!block;n#Entity#0" expanded="false" />
+                <element signature="n#!!block;n#Player#0" expanded="false" />
+                <element signature="n#!!block;n#updateScroll#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="view.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="view.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/javascript/view.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="39" selection-start="259" selection-end="259" vertical-scroll-proportion="0.16545013">
+            <state line="31" column="13" selection-start="816" selection-end="816" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -64,8 +74,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="width" value="1276" />
-    <option name="height" value="994" />
+    <option name="x" value="-4" />
+    <option name="y" value="-4" />
+    <option name="width" value="1288" />
+    <option name="height" value="1002" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -93,6 +105,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -111,9 +124,22 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gamejam" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gamejam" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -176,17 +202,26 @@
       <created>1362584675216</created>
       <updated>1362584675216</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary=".idea crap">
+      <created>1362649328948</created>
+      <updated>1362649328948</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Foreground layer">
+      <created>1362650348831</created>
+      <updated>1362650348831</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1276" height="994" extended-state="0" />
+    <frame x="-4" y="-4" width="1288" height="1002" extended-state="6" />
     <editor active="false" />
     <layout>
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293979" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15421687" sideWeight="0.67060214" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15274464" sideWeight="0.67060214" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -196,7 +231,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -206,7 +240,7 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="false" />
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="true" />
     <option name="myTodoPanelSettings">
@@ -237,7 +271,7 @@
     <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dom Error fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Foreground layer" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -257,15 +291,47 @@
     <MESSAGE value="Fixed tile properties in .tmx" />
     <MESSAGE value="Load Enemies (broken)" />
     <MESSAGE value="Dom Error fixed" />
+    <MESSAGE value=".idea crap" />
+    <MESSAGE value="Foreground layer" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/javascript/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="168" column="29" selection-start="4965" selection-end="4965" vertical-scroll-proportion="0.0">
+        <state line="193" column="9" selection-start="5208" selection-end="5208" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="n#!!block;n#Info#0" expanded="false" />
+            <element signature="n#!!block;n#Item#0" expanded="false" />
+            <element signature="n#!!block;n#SplashScreen#0" expanded="false" />
+            <element signature="n#!!block;n#Entity#0" expanded="false" />
+            <element signature="n#!!block;n#Player#0" expanded="false" />
+            <element signature="n#!!block;n#updateScroll#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/javascript/view.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="0" selection-start="224" selection-end="224" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/javascript/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="168" column="29" selection-start="4965" selection-end="4965" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="n#!!block;n#Info#0" expanded="false" />
+            <element signature="n#!!block;n#Item#0" expanded="false" />
+            <element signature="n#!!block;n#SplashScreen#0" expanded="false" />
+            <element signature="n#!!block;n#Entity#0" expanded="false" />
+            <element signature="n#!!block;n#Player#0" expanded="false" />
+            <element signature="n#!!block;n#updateScroll#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -276,17 +342,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/javascript/main.js">
+    <entry file="file://$PROJECT_DIR$/javascript/view.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="193" column="31" selection-start="5659" selection-end="5659" vertical-scroll-proportion="0.0">
+        <state line="31" column="13" selection-start="816" selection-end="816" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/javascript/view.js">
+    <entry file="file://$PROJECT_DIR$/javascript/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="39" selection-start="259" selection-end="259" vertical-scroll-proportion="0.16545013">
-          <folding />
+        <state line="26" column="0" selection-start="993" selection-end="993" vertical-scroll-proportion="0.5325301">
+          <folding>
+            <element signature="n#!!block;n#Info#0" expanded="false" />
+            <element signature="n#!!block;n#Item#0" expanded="false" />
+            <element signature="n#!!block;n#SplashScreen#0" expanded="false" />
+            <element signature="n#!!block;n#Entity#0" expanded="false" />
+            <element signature="n#!!block;n#Player#0" expanded="false" />
+            <element signature="n#!!block;n#updateScroll#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
