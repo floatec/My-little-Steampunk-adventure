@@ -38,10 +38,10 @@ gamejs.preload([
 ]);
 
 //Cheats
-var WALLHACK = true;
-var INVINCIBLE = false;
-var ALL_ITEMS = true;
-var SHOW_HITBOX = true;
+WALLHACK = true;
+INVINCIBLE = true;
+ALL_ITEMS = true;
+SHOW_HITBOX = true;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
