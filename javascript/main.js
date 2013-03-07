@@ -744,6 +744,11 @@ function main() {
             enemies.draw(display);
             weapons.draw(display);
             savepoints.draw(display);
+            if (SHOW_HITBOX) {
+                triggers.forEach(function(trigger) {
+                    gamejs.draw.rect(display, "rgba(0,0,255,0.5)", trigger.rect, 0);
+                })
+            }
             map.drawTiles(display);
             map.drawForeground(display);
 
