@@ -36,7 +36,7 @@ gamejs.preload([
 
 //Cheats
 var WALLHACK = true;
-var INVINCIBLE = false;
+var INVINCIBLE = true;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -49,7 +49,7 @@ var CAMERA_MOVE_OFFSET = 32;
 var TMX_FILE = './data/testlevel1.tmx';
 
 //Physics
-var GRAVITY = 60;
+var GRAVITY = 2;
 var JUMP_IMPULSE = 15;
 
 //Player
@@ -233,7 +233,9 @@ function Entity(health) {
 
         //Calculate new Y
         if (!this.isAtGround) {
-            this.velocity += GRAVITY * dt;
+
+            //TODO Multiply by dt
+            this.velocity += GRAVITY;
 
             //Collide with ceiling
             if (this.velocity < 0 && !map.canMove8(this, 0, -0.01)) {
