@@ -25,7 +25,7 @@ gamejs.preload([
     './data/steam.png',
     './data/speachbubble.png',
     './data/_g.png',
-    '/data/_sp.png',
+    './data/_sp.png',
     './data/_sp_a.png',
     './data/_n.png',
     './data/box.png',
