@@ -190,14 +190,14 @@ function Entity() {
     this.isAtGround = false;
 
     this.updatePhysics = function(dt) {
-        this.isAtGround = !map.canMove(this, 0, 0.01);
+        this.isAtGround = !map.canMove8(this, 0, 0.01);
 
         //Calculate new Y
         if (!this.isAtGround) {
             this.velocity += GRAVITY * dt;
 
             //Collide with ceiling
-            if (this.velocity < 0 && !map.canMove(this, 0, -0.01)) {
+            if (this.velocity < 0 && !map.canMove8(this, 0, -0.01)) {
                 this.velocity = 0;
             }
         }
@@ -320,7 +320,7 @@ function WalkingEnemy(imagePath, pos, speed, health) {
 
         //Move
         var x = this.speed * this.direction * dt;
-        if (map.canMove(this, x, 0)) {
+        if (map.canMove8(this, x, 0) && !map.canMove4(this, x, 0.01)) {
             map.move(this, x, 0);
         }
         //Change direction
@@ -343,7 +343,7 @@ function FlyingEnemy(imagePath, pos, speed, health) {
 
         //Move
         var x = this.speed * this.direction * dt;
-        if (map.canMove(this, x, 0)) {
+        if (map.canMove8(this, x, 0)) {
             map.move(this, x, 0);
         }
         //Change direction

@@ -101,45 +101,65 @@ var Map = exports.Map = function(url) {
 		
 		return false;
 	};
+
+    this.canMove4 = function(sprite, x, y) {
+
+        return !this.SideHitsWithProperty(sprite, x, y, "collide");
+    };
 	
-	this.canMove = function(sprite, x, y) {
-	    return !this.hitsObjectwithProperty(sprite, x, y, "collide");
+	this.canMove8 = function(sprite, x, y) {
+
+	    return !this.EdgeHitsWithProperty(sprite, x, y, "collide")
+            && !this.SideHitsWithProperty(sprite, x, y, "collide");
     };
 
     this.hitsKillingObject = function(sprite) {
-        return this.hitsObjectwithProperty(sprite, 0, 0, "kill");
+
+        return this.EdgeHitsWithProperty(sprite, 0, 0, "kill");
     };
 
-    this.hitsObjectwithProperty = function(sprite, x, y,property) {
+    this.EdgeHitsWithProperty = function(sprite, x, y, property) {
 
         var newPos = sprite.rect.clone();
         newPos.moveIp([x, y]);
 
-        //Collisioncheck at eight points
         var topleft = newPos.topleft;
         var topright = newPos.right % map.tileWidth == 0 ? [newPos.right - 1, newPos.top] : newPos.topright;
         var bottomleft = newPos.bottom % map.tileHeight == 0 ? [newPos.left, newPos.bottom - 1] : newPos.bottomleft;
+        var bottomright = [newPos.right % map.tileWidth == 0 ? newPos.right - 1 : newPos.right,
+            newPos.bottom % map.tileHeight == 0 ? newPos.bottom - 1 : newPos.bottom];
 
-        var brx = newPos.right % map.tileWidth == 0 ? newPos.right - 1 : newPos.right;
-        var bry  = newPos.bottom % map.tileHeight == 0 ? newPos.bottom - 1 : newPos.bottom;
-        var bottomright = [brx, bry];
+        //Collisioncheck at edges
+        return !(!this.getTileProperty(topleft, property) && !this.getTileProperty(topright, property)
+            && !this.getTileProperty(bottomleft, property) && !this.getTileProperty(bottomright, property)) ;
+    };
+
+    this.SideHitsWithProperty = function(sprite, x, y, property) {
+
+        var newPos = sprite.rect.clone();
+        newPos.moveIp([x, y]);
+
+        var topleft = newPos.topleft;
+        var topright = newPos.right % map.tileWidth == 0 ? [newPos.right - 1, newPos.top] : newPos.topright;
+        var bottomleft = newPos.bottom % map.tileHeight == 0 ? [newPos.left, newPos.bottom - 1] : newPos.bottomleft;
+        var bottomright = [newPos.right % map.tileWidth == 0 ? newPos.right - 1 : newPos.right,
+            newPos.bottom % map.tileHeight == 0 ? newPos.bottom - 1 : newPos.bottom];
 
         var topmiddle = [(topleft[0] + topright[0]) / 2, topleft[1]];
         var bottommiddle = [(bottomleft[0] + bottomright[0]) / 2, bottomleft[1]];
         var middleleft = [topleft[0], (topleft[1] + bottomleft[1]) / 2];
         var middleright = [topright[0], (topright[1] + bottomright[1]) / 2];
 
-        return !(!this.getTileProperty(topleft, property) && !this.getTileProperty(topmiddle, property)
-            && !this.getTileProperty(topright, property) && !this.getTileProperty(middleleft, property)
-            && !this.getTileProperty(middleright, property) && !this.getTileProperty(bottomleft, property)
-            && !this.getTileProperty(bottommiddle, property) && !this.getTileProperty(bottomright, property)) ;
+        //Collisioncheck at middle of sides
+        return !(!this.getTileProperty(topmiddle, property) && !this.getTileProperty(middleleft, property)
+            && !this.getTileProperty(middleright, property) && !this.getTileProperty(bottommiddle, property));
     };
 	
 	this.tryMove = function(sprite, x, y) {
 	
 		if (x != 0)  {
 
-			if (this.canMove(sprite, x, 0)) {
+			if (this.canMove8(sprite, x, 0)) {
 				sprite.rect.moveIp(x, 0);
 			}
 			//Left
@@ -156,7 +176,7 @@ var Map = exports.Map = function(url) {
 		
 		if (y != 0)  {
 		
-			if (this.canMove(sprite, 0, y)) {
+			if (this.canMove8(sprite, 0, y)) {
 				sprite.rect.moveIp(0, y);
 			}
 			//Up
