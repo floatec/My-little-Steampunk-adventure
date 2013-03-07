@@ -4,7 +4,7 @@ var view = require('./view');
 gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.png', './data/player_r_s.png',
     './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
     './data/player_l_sp.png', './data/enemy_l.png', './data/enemy_r.png', './data/hero.png','./data/splash.png',
-    './data/_s.png','./data/_s_a.png', './data/_g_a.png',
+    './data/_s.png','./data/_s_a.png', './data/_g_a.png','./data/steam.png',
     './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png', './data/box.png','./data/_n_a.png','./data/gameover.png' ]);
 
 //Cheats
@@ -18,7 +18,7 @@ var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
 var TILE_SIZE = 16;
 var CAMERA_MOVE_OFFSET = 32;
-var TMX_FILE = './data/testlevel.tmx';
+var TMX_FILE = './data/testlevel1.tmx';
 
 //Physics
 var GRAVITY = 60;
@@ -102,18 +102,18 @@ function Info(text){
     this.pos=[0,0];
     this.existingTime=0;
     this.infobox = font.render(text, "rgba(255,255,255,1)");
-
     this.update = function(dt) {
 
-       this.pos=player.rect.topleft;
-       this.pos[1] -= 20;
+       this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
+        this.pos[1] -= 20;
        this.existingTime += dt;
     }
+    //this.background=new Rect( "rgba(255,255,00,1)",this.pos, this.infobox.getSize());
 
     this.draw = function(display) {
 
         if(this.existingTime <= INFO_TIME){
-            gamejs.draw.rect(display, "rgba(0,0,0,1)", 120, 0);
+            gamejs.draw.rect(display, "rgba(0,0,255,1)", 120, 0);
             display.blit(this.infobox, this.pos)
         }
     }
