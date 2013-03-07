@@ -31,7 +31,9 @@ gamejs.preload([
     './data/box.png',
     './data/_n_a.png',
     './data/pipes.png',
-    './data/gameover.png'
+    './data/gameover.png',
+    './sounds/spring.ogg',
+    './sounds/slay.ogg'
 ]);
 
 //Cheats
@@ -106,7 +108,7 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
     });
 });
 addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
-    if(typeof (menu[ITEM_NONE])!="String"){
+    if(menu[ITEM_NONE]==ITEM_NONE){
         infobox = new Info("Ohh lets put our items away(3)");
         player.inventory.push(ITEM_NONE);
         menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
@@ -287,12 +289,12 @@ function Player(position) {
     this.item = ITEM_SWORD;
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
+
     if(ALL_ITEMS){
         this.inventory[ITEM_GUN]=ITEM_GUN;
         this.inventory[ITEM_NONE]=ITEM_NONE;
         this.inventory[ITEM_SPRING]=ITEM_SPRING;
     }
-
     this.isInInventory = function(item) {
         for(i in this.inventory) {
             if(item == this.inventory[i]){
@@ -314,6 +316,10 @@ function Player(position) {
             }
 
             else if (event.key === gamejs.event.K_w && this.isAtGround) {
+                if(this.item==ITEM_SPRING){
+                    var effect = gamejs.mixer.Sound("./sounds/spring.ogg");
+                    effect.play();
+                }
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
 
             }
@@ -330,6 +336,10 @@ function Player(position) {
                 this.item = ITEM_NONE;
             }
             else if (event.key === gamejs.event.K_SPACE && player.item === ITEM_SWORD) {
+
+                    var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
+                    effect.play();
+
                 spawnWeapon(ITEM_SWORD);
             }
 
