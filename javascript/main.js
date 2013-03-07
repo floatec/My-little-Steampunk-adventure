@@ -32,8 +32,9 @@ gamejs.preload([
     './data/_n_a.png',
     './data/pipes.png',
     './data/gameover.png',
-    './sounds/spring.ogg',
-    './sounds/slay.ogg'
+    './data/item_disabled.png',
+    './sounds/slay.ogg',
+    './sounds/spring.ogg'
 ]);
 
 //Cheats
@@ -71,6 +72,7 @@ var ENEMY_TYPES = {
 }
 
 //Items
+var MAX_ITEM_BLOCKTIME= 0.5;
 var ITEM_SWORD = "_s";
 var ITEM_GUN = "_g";
 var ITEM_SPRING = "_sp";
@@ -92,11 +94,14 @@ var weapons;
 var infobox ;
 var menu = [];
 var triggers = [];
+var itemBlockedTimer;
+var itemenabled=true;
 
-addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Press A or D");});
-addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Press W to jump");});
+addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
+addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[A] or [D]");});
+addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("oh is this high![W]");});
 addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
-    infobox = new Info("Ohh some Springs!\n(switch with 1 and 2 your item)");
+    infobox = new Info("Ohh some Springs!\n[2]back[1]");
     player.inventory.push(ITEM_SPRING);
     menu[ITEM_SPRING] = new Item(ITEM_SPRING, [32+10,5], function(event) {
         if (event.key === ITEM_KEYS.spring) {
@@ -110,7 +115,7 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
 });
 addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
     if(menu[ITEM_NONE]==ITEM_NONE){
-        infobox = new Info("Ohh lets put our items away(3)");
+        infobox = new Info("Ohh lets put our items away[3]");
         player.inventory.push(ITEM_NONE);
         menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
             if (event.key === ITEM_KEYS.none) {
@@ -126,6 +131,20 @@ addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
     }
 
 });
+function blockItems(){
+    for(i in menu){
+        menu[i].disable();
+    }
+    itemBlockedTimer=0;
+    itemenabled=false;
+}
+function reactivateItems(){
+    for(i in menu){
+        menu[i].enable();
+    }
+    itemenabled=true;
+}
+
 addTrigger(new gamejs.Rect([248*TILE_SIZE,3*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh I'm so fast!!!");});
 /*menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
  if (event.key === ITEM_KEYS.gun) {
@@ -185,6 +204,7 @@ function Info(text){
 function Item(name,position,handle) {
     this.active = false;
     this.name = name;
+    this.currentState=gamejs.image.load("./data/" + name + ".png");
     Item.superConstructor.apply(this, arguments);
 
     this.image = gamejs.image.load("./data/" + name + ".png");
@@ -197,6 +217,14 @@ function Item(name,position,handle) {
 
     this.deactivate = function() {
         this.image = gamejs.image.load("./data/" + this.name + ".png");
+    }
+    this.enable = function() {
+        this.image = this.currentState;
+    }
+
+    this.disable = function() {
+        this.currentState=this.image
+        this.image = gamejs.image.load("./data/item_disabled.png");
     }
 
     this.update = function(dt) {
@@ -322,19 +350,26 @@ function Player(position) {
                     effect.play();
                 }
                 this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
-
             }
-            else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)) {
+            else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)&&itemenabled) {
                 this.item = ITEM_SWORD;
+                blockItems()
+                var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
+                effect.play();
+
+                spawnWeapon(ITEM_SWORD);
             }
-            else if (event.key === ITEM_KEYS.gun && player.isInInventory(ITEM_GUN)) {
+            else if (event.key === ITEM_KEYS.gun && player.isInInventory(ITEM_GUN)&&itemenabled) {
                 this.item = ITEM_GUN;
+                blockItems();
             }
-            else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)) {
+            else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)&&itemenabled) {
                 this.item = ITEM_SPRING;
+                blockItems();
             }
             else if (event.key === ITEM_KEYS.none && player.isInInventory(ITEM_NONE)) {
                 this.item = ITEM_NONE;
+                blockItems();
             }
             else if (event.key === gamejs.event.K_SPACE && player.item === ITEM_SWORD) {
 
@@ -534,14 +569,18 @@ function main() {
     function update(gameTime) {
 
         var dt = gameTime / 1000;
-
+        itemBlockedTimer+=dt;
+        if(itemBlockedTimer>=MAX_ITEM_BLOCKTIME&&!itemenabled){
+            reactivateItems();
+        }
         //Process input
         gamejs.event.get().forEach(function(event) {
-            player.handle(event);
-            splashScreen.handle(event);
             for (i in menu){
                 menu[i].handle(event);
             }
+            player.handle(event);
+            splashScreen.handle(event);
+
         });
         if(player.isDead()){
             splashScreen.setGameOver();
