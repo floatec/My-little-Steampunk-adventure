@@ -448,7 +448,7 @@ function Player(position) {
         //Collision with enemies
         gamejs.sprite.spriteCollide(player, enemies, false).forEach(function(collision) {
             collision.b.damageBy(10);
-            player.damageBy(1);
+            player.kill();
         });
 
         //TODO Fix for performance
@@ -474,13 +474,17 @@ function Player(position) {
     this.kill = function() {
 
         if (!INVINCIBLE) {
-            //this._alive = false;
+            if (this.health <= 1) {
+                this._alive = false;
+            }
+            else {
+                this.health -= 1;
+                this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
 
-            this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
-
-            var x = this.lastSave.offset[0] - map.getOffset()[0];
-            var y = this.lastSave.offset[1] - map.getOffset()[1];
-            updateScroll(x, y);
+                var x = this.lastSave.offset[0] - map.getOffset()[0];
+                var y = this.lastSave.offset[1] - map.getOffset()[1];
+                updateScroll(x, y);
+            }
         }
     }
 }
