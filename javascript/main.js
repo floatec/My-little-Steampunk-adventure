@@ -241,10 +241,7 @@ gamejs.utils.objects.extend(Entity, gamejs.sprite.Sprite);
 function Player(position) {
     Player.superConstructor.apply(this, arguments);
 
-    //Load image
     this.image = gamejs.image.load('./data/player_r_n.png');
-
-    //Set startup position
     this.rect = new gamejs.Rect(position, this.image.getSize());
 
     //State variables
@@ -311,6 +308,12 @@ function Player(position) {
 
         //Falling etc.
         this.updatePhysics(dt);
+
+        //Collision
+        gamejs.sprite.spriteCollide(player, enemies, true).forEach(function(collision) {
+
+            //TODO Do something with player
+        });
 
         //TODO Fix for performance
         this.image = gamejs.image.load('./data/player' + this.dir + this.item + '.png');
@@ -521,7 +524,7 @@ function createEnemy(type, pos) {
     else if (type === ENEMY_TYPES.flying) {
         enemies.add(new FlyingEnemy("enemy_3", pos, 100, 1));
     }
-};
+}
 
 //Start game
 gamejs.ready(main);
