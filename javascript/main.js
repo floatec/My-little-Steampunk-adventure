@@ -30,6 +30,7 @@ gamejs.preload([
     './data/_n.png',
     './data/box.png',
     './data/_n_a.png',
+    './data/pipes.png',
     './data/gameover.png'
 ]);
 
@@ -390,7 +391,7 @@ function main() {
     //Initialize variables
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
-    infobox = new Info(" ");
+    infobox = new Info("Hallo, I'm Julia");
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
     menu = [];
