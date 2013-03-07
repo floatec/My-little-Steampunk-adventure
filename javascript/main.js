@@ -38,6 +38,7 @@ gamejs.preload([
 var WALLHACK = true;
 var INVINCIBLE = true;
 var ALL_ITEMS = true;
+var SHOW_HITBOX = true;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -459,10 +460,10 @@ function Weapon(lifeTime, damage) {
         }
 
         //Only hit once
-        if (existingTime = 0) {
-            gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(enemy) {
-                //TODO Variable damage
-                enemy.damageBy(1);
+        if (this.existingTime == 0) {
+            gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(collision) {
+
+                collision.b.damageBy(collision.a.damage);
             });
         }
 
@@ -476,7 +477,9 @@ function Weapon(lifeTime, damage) {
     this.draw = function(display) {
 
        //TODO Show "animation" ?
-        gamejs.draw.rect(display, "rgba(255, 0, 0, 0.5)", this.rect, 0);
+        if (this.rect != null && SHOW_HITBOX) {
+            gamejs.draw.rect(display, "rgba(255, 0, 0, 0.5)", this.rect, 0);
+        }
     };
 }
 gamejs.utils.objects.extend(Weapon, gamejs.sprite.Sprite);
