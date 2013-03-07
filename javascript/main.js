@@ -363,7 +363,7 @@ function Player(position) {
                 var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
                 effect.play();
 
-                spawnWeapon(ITEM_SWORD);
+                weapons.add(new Sword(SWORD_TIME, SWORD_DAMAGE));
             }
             else if (event.key === ITEM_KEYS.gun && player.isInInventory(ITEM_GUN)&&itemenabled) {
                 this.item = ITEM_GUN;
