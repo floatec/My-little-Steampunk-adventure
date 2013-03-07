@@ -57,6 +57,10 @@ var Map = exports.Map = function(url) {
         offset[1] += y;
     };
 
+    this.getOffset = function() {
+        return [offset[0], offset[1]]; // "clone"
+    };
+
 
     this.getTileIndex = function(pos) {
 

@@ -38,7 +38,7 @@ gamejs.preload([
 
 //Cheats
 var WALLHACK = true;
-var INVINCIBLE = true;
+var INVINCIBLE = false;
 var ALL_ITEMS = true;
 var SHOW_HITBOX = true;
 
@@ -61,7 +61,7 @@ var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
 var PLAYER_SPEED = 200;
 var PLAYER_HEALTH = 5;
-var JUMP_MULTIPILER = 1.8;
+var JUMP_MULTIPLIER = 1.8;
 
 //Weapons
 var SWORD_TIME = 0.1;
@@ -70,10 +70,11 @@ var GUN_DAMAGE = 1;
 var GUN_SPEED = 300;
 
 //Enemies
-var ENEMY_TYPES = {
-    easy : "enemy1",
-    hard : "enemy2",
-    flying : "enemy3"
+var OBJECT_TYPES = {
+    EnemyEasy : "enemy1",
+    EnemyHard : "enemy2",
+    EnemyFlying : "enemy3",
+    Savepoint : "save"
 }
 
 //Items
@@ -95,6 +96,7 @@ var map;
 var player;
 var enemies;
 var weapons;
+var savepoints;
 var infobox ;
 var menu = [];
 var triggers = [];
@@ -296,6 +298,7 @@ function Player(position) {
     this.item = ITEM_SWORD;
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
+    this.lastSave;
 
     if(ALL_ITEMS){
         this.inventory[ITEM_GUN]=ITEM_GUN;
@@ -327,7 +330,7 @@ function Player(position) {
                     var effect = gamejs.mixer.Sound("./sounds/spring.ogg");
                     effect.play();
                 }
-                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
+                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPLIER:1);
 
             }
             else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)) {
@@ -382,10 +385,7 @@ function Player(position) {
 
         //Collision with enemies
         gamejs.sprite.spriteCollide(player, enemies, true).forEach(function(collision) {
-
-            if (!INVINCIBLE) {
-                player.damageBy(1);
-            }
+            player.damageBy(1);
         });
 
         //TODO Fix for performance
@@ -397,10 +397,33 @@ function Player(position) {
         }
 
         //Kill
-        if (map.hitsKillingObject(this) && !INVINCIBLE) {
+        if (map.hitsKillingObject(this)) {
             this.kill();
         }
+
+        //Save
+        gamejs.sprite.spriteCollide(player, savepoints, false).forEach(function(collision) {
+            collision.b.offset = map.getOffset();
+            player.lastSave = collision.b;
+        });
     };
+
+    this.kill = function() {
+
+        if (!INVINCIBLE) {
+            //this._alive = false;
+
+            console.log(this.lastSave.offset);
+            console.log(map.getOffset());
+
+            var x = this.lastSave.offset[0] - map.getOffset()[0];
+            var y = this.lastSave.offset[1] - map.getOffset()[1];
+            console.log(x, y);
+            updateScroll(x, y);
+
+            this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
+        }
+    }
 }
 gamejs.utils.objects.extend(Player, Entity);
 
@@ -554,6 +577,23 @@ function Bullet(lifeTime, damage, speed) {
 }
 gamejs.utils.objects.extend(Bullet, Weapon);
 
+function Savepoint(pos) {
+    Savepoint.superConstructor.apply(this, arguments);
+
+    this.size = [TILE_SIZE, TILE_SIZE];
+    this.rect = new gamejs.Rect(pos, this.size);
+
+    this.offset = [0, 0];
+
+    this.draw = function(display) {
+
+        if (SHOW_HITBOX) {
+            gamejs.draw.rect(display, "rgba(255, 255, 0, 0.5)", this.rect, 0);
+        }
+    };
+}
+gamejs.utils.objects.extend(Savepoint, gamejs.sprite.Sprite);
+
 function main() {
 
     //Initialize screen
@@ -563,6 +603,7 @@ function main() {
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
     weapons = new gamejs.sprite.Group();
+    savepoints = new gamejs.sprite.Group();
     infobox = new Info("Hallo, I'm Julia");
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
@@ -570,7 +611,7 @@ function main() {
 
     //Initialize map
     map = new view.Map(TMX_FILE);
-    map.loadObjects(spawnEnemy);
+    map.loadObjects(spawnObject);
 
     menu[ITEM_SWORD]=new Item(ITEM_SWORD,[0+5,5],function(event){
         if (event.key === ITEM_KEYS.sword) {
@@ -614,7 +655,7 @@ function main() {
         checkForTrigger();
         infobox.update(dt);
         map.update(dt);
-        updateScroll();
+        updateScroll(0, 0);
     }
 
     function draw() {
@@ -633,6 +674,7 @@ function main() {
             player.draw(display);
             enemies.draw(display);
             weapons.draw(display);
+            savepoints.draw(display);
             map.drawTiles(display);
             map.drawForeground(display);
 
@@ -646,10 +688,7 @@ function main() {
     }
 }
 
-function updateScroll() {
-
-    var x = 0;
-    var y = 0;
+function updateScroll(x, y) {
 
     //Scroll to the right
     if (player.rect.right > SCREEN_WIDTH) {
@@ -674,24 +713,27 @@ function updateScroll() {
     }
 
     if (x != 0 || y != 0) {
-
         map.moveOffset(x, y);
         enemies.forEach(function(enemy) { enemy.rect.moveIp(x, y); })
         triggers.forEach(function(trigger) { trigger.rect.moveIp(x, y); });
         weapons.forEach(function(weapon) { weapon.rect.moveIp(x, y); });
+        savepoints.forEach(function (savepoint) { savepoint.rect.moveIp(x, y); });
     }
 }
 
-function spawnEnemy(type, pos) {
+function spawnObject(type, pos) {
 
-    if (type === ENEMY_TYPES.easy) {
+    if (type === OBJECT_TYPES.EnemyEasy) {
         enemies.add(new WalkingEnemy(1, "enemy_1", pos, 100));
     }
-    else if (type === ENEMY_TYPES.hard) {
+    else if (type === OBJECT_TYPES.EnemyHard) {
         enemies.add(new WalkingEnemy(2, "enemy_2", pos, 80));
     }
-    else if (type === ENEMY_TYPES.flying) {
+    else if (type === OBJECT_TYPES.EnemyFlying) {
         enemies.add(new FlyingEnemy(1, "enemy_3", pos, 100));
+    }
+    else if (type === OBJECT_TYPES.Savepoint) {
+        savepoints.add(new Savepoint(pos));
     }
 }
 
