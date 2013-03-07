@@ -5,7 +5,7 @@ gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.
     './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
     './data/player_l_sp.png', './data/enemy_1_l.png', './data/enemy_1_r.png', './data/enemy_2_l.png', './data/enemy_2_r.png',
     './data/enemy_3_l.png', './data/enemy_3_r.png', './data/hero.png','./data/splash.png',
-    './data/_s.png','./data/_s_a.png', './data/_g_a.png','./data/steam.png',
+    './data/_s.png','./data/_s_a.png', './data/_g_a.png','./data/steam.png','./data/speachbubble.png',
     './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png', './data/box.png','./data/_n_a.png','./data/gameover.png' ]);
 
 //Cheats
@@ -55,7 +55,7 @@ var ITEM_KEYS = {
 var map;
 var player;
 var enemies;
-var infobox = new Info(" ");
+var infobox ;
 var menu = [];
 var triggers = [];
 
@@ -110,20 +110,22 @@ function Info(text){
 
     this.pos=[0,0];
     this.existingTime=0;
-    this.infobox = font.render(text, "rgba(255,255,255,1)");
+    this.infobox = font.render(text, "rgba(0,0,0,1)");
+    this.image =  gamejs.image.load("./data/speachbubble.png");
     this.update = function(dt) {
-
        this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
         this.pos[1] -= 20;
+        this.bg=new gamejs.Rect(this.pos,this.infobox.getSize());
        this.existingTime += dt;
     }
-    //this.background=new Rect( "rgba(255,255,00,1)",this.pos, this.infobox.getSize());
 
     this.draw = function(display) {
 
         if(this.existingTime <= INFO_TIME){
-            gamejs.draw.rect(display, "rgba(0,0,255,1)", 120, 0);
-            display.blit(this.infobox, this.pos)
+           gamejs.draw.rect(display, "rgba(255,255,255,1)", this.bg ,0);
+           display.blit(this.image, [this.pos[0]+(this.infobox.getSize()[0]/2),this.pos[1]+12])
+           display.blit(this.infobox, this.pos)
+
         }
     }
 }
@@ -363,7 +365,7 @@ function main() {
     //Initialize variables
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
-
+    infobox = new Info(" ");
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
     menu = [];
