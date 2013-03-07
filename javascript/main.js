@@ -35,7 +35,8 @@ gamejs.preload([
 ]);
 
 //Cheats
-var DEBUG = true;
+var WALLHACK = true;
+var INVINCIBLE = false;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -55,6 +56,7 @@ var JUMP_IMPULSE = 15;
 var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
 var PLAYER_SPEED = 200;
+var PLAYER_HEALTH = 5;
 
 //Enemies
 var ENEMY_TYPES = {
@@ -221,7 +223,7 @@ function Entity(health) {
     this.damageBy = function(value) {
         this.health -= value;
 
-        if (this.health < 0) {
+        if (this.health <= 0) {
             this.kill();
         }
     }
@@ -255,6 +257,7 @@ function Player(position) {
     this.rect = new gamejs.Rect(position, this.image.getSize());
 
     //State variables
+    this.health = PLAYER_HEALTH;
     this.xDir = 0;
     this.dir = DIR_RIGHT;
     this.item = ITEM_SWORD;
@@ -296,7 +299,7 @@ function Player(position) {
                 this.item = ITEM_NONE;
             }
             //Cheats
-            if (DEBUG) {
+            if (WALLHACK) {
                 if (event.key === gamejs.event.K_LEFT) { this.rect.left -= 10; }
                 if (event.key === gamejs.event.K_RIGHT) { this.rect.left += 10; }
                 if (event.key === gamejs.event.K_UP) { this.rect.top -= 100; }
@@ -318,17 +321,19 @@ function Player(position) {
         //Falling etc.
         this.updatePhysics(dt);
 
-        //Collision
+        //Collision with enemies
         gamejs.sprite.spriteCollide(player, enemies, true).forEach(function(collision) {
 
-            //TODO Do something with player
+            if (!INVINCIBLE) {
+                player.damageBy(1);
+            }
         });
 
         //TODO Fix for performance
         this.image = gamejs.image.load('./data/player' + this.dir + this.item + '.png');
 
         //Kill
-        if (!DEBUG && map.hitsKillingObject(this)) {
+        if (map.hitsKillingObject(this) && !INVINCIBLE) {
             this.kill();
         }
     };
