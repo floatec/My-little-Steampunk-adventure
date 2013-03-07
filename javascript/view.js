@@ -64,8 +64,10 @@ var Map = exports.Map = function(url) {
         var y = (pos[1] - offset[1]) / map.tileHeight;
 
         if (x < 0 || x > map.width || y < 0 || y > map.height) {
+
             //TODO Better error handling
             console.log("ERROR: Tile [" + Math.floor(x) + "," + Math.floor(y) + "] does not exist!");
+            return [7,5]; //Player start position
         }
 
         return [Math.floor(x), Math.floor(y)];
