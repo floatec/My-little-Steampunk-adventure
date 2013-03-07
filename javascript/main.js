@@ -443,26 +443,28 @@ gamejs.utils.objects.extend(FlyingEnemy, Enemy);
 function Weapon(lifeTime, damage) {
     Weapon.superConstructor.apply(this, arguments);
 
-    if (player.direction > 0) {
-        this.size = [TILE_SIZE * 2, TILE_SIZE * 2];
-        this.rect = new gamejs.Rect(player.rect.topright, this.size);
-    }
-    else {
-        this.size = [-TILE_SIZE * 2, TILE_SIZE * 2];
-        this.rect = new gamejs.Rect(player.rect.topleft, this.size);
-    }
-
     this.damage = damage;
     this.lifeTime = lifeTime;
     this.existingTime = 0;
 
     this.update = function(dt) {
 
-        gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(enemy) {
+        if (player.direction > 0) {
+            this.size = [TILE_SIZE * 2, TILE_SIZE * 2];
+            this.rect = new gamejs.Rect(player.rect.topright, this.size);
+        }
+        else {
+            this.size = [-TILE_SIZE * 2, TILE_SIZE * 2];
+            this.rect = new gamejs.Rect(player.rect.topleft, this.size);
+        }
 
-            //TODO Variable damage
-            enemy.damageBy(1);
-        });
+        //Only hit once
+        if (existingTime = 0) {
+            gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(enemy) {
+                //TODO Variable damage
+                enemy.damageBy(1);
+            });
+        }
 
         //Disappear
         this.existingTime += dt;
@@ -623,11 +625,9 @@ function spawnEnemy(type, pos) {
 function spawnWeapon(type) {
 
     if (type === ITEM_SWORD) {
-        weapons.add(new Weapon(0.5, 1));
+        weapons.add(new Weapon(0.2, 1));
     }
 }
-
-
 
 //Start game
 gamejs.ready(main);
