@@ -103,6 +103,8 @@ var triggers = [];
 var itemBlockedTimer;
 var itemenabled=true;
 
+addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
+addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
 addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
 addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[A] or [D]");});
 addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("oh is this high![W]");});
@@ -371,6 +373,9 @@ function Player(position) {
             }
             else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)&&itemenabled) {
                 this.item = ITEM_SPRING;
+                if(player.isAtGround){
+                    this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
+                }
                 blockItems();
             }
             else if (event.key === ITEM_KEYS.none && player.isInInventory(ITEM_NONE)) {
