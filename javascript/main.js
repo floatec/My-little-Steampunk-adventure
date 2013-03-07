@@ -64,6 +64,12 @@ var PLAYER_SPEED = 200;
 var PLAYER_HEALTH = 5;
 var JUMP_MULTIPILER = 1.8;
 
+//Weapons
+var SWORD_TIME = 0.1;
+var SWORD_DAMAGE = 2;
+var GUN_DAMAGE = 1;
+var GUN_SPEED = 300;
+
 //Enemies
 var ENEMY_TYPES = {
     easy : "enemy1",
@@ -371,12 +377,17 @@ function Player(position) {
                 this.item = ITEM_NONE;
                 blockItems();
             }
-            else if (event.key === gamejs.event.K_SPACE && player.item === ITEM_SWORD) {
+            else if (event.key === gamejs.event.K_SPACE) {
+
+                if (player.item === ITEM_SWORD) {
+                    weapons.add(new Sword(SWORD_TIME, SWORD_DAMAGE));
 
                     var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
                     effect.play();
-
-                spawnWeapon(ITEM_SWORD);
+                }
+                else if (player.item === ITEM_GUN) {
+                    weapons.add(new Bullet(10, GUN_DAMAGE, GUN_SPEED));
+                }
             }
 
             //Cheats
@@ -493,8 +504,22 @@ function Weapon(lifeTime, damage) {
     this.lifeTime = lifeTime;
     this.existingTime = 0;
 
+    this.draw = function(display) {
+
+        //TODO Show "animation" ?
+        if (this.rect != null && SHOW_HITBOX) {
+            gamejs.draw.rect(display, "rgba(255, 0, 0, 0.5)", this.rect, 0);
+        }
+    };
+}
+gamejs.utils.objects.extend(Weapon, gamejs.sprite.Sprite);
+
+function Sword(lifeTime, damage) {
+    Sword.superConstructor.apply(this, arguments);
+
     this.update = function(dt) {
 
+        //Move with player
         if (player.direction > 0) {
             this.size = [TILE_SIZE * 2, TILE_SIZE * 2];
             this.rect = new gamejs.Rect(player.rect.topright, this.size);
@@ -507,7 +532,6 @@ function Weapon(lifeTime, damage) {
         //Only hit once
         if (this.existingTime == 0) {
             gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(collision) {
-
                 collision.b.damageBy(collision.a.damage);
             });
         }
@@ -518,16 +542,52 @@ function Weapon(lifeTime, damage) {
             this.kill();
         }
     };
+}
+gamejs.utils.objects.extend(Sword, Weapon);
 
-    this.draw = function(display) {
+function Bullet(lifeTime, damage, speed) {
+    Bullet.superConstructor.apply(this, arguments);
 
-       //TODO Show "animation" ?
-        if (this.rect != null && SHOW_HITBOX) {
-            gamejs.draw.rect(display, "rgba(255, 0, 0, 0.5)", this.rect, 0);
+    this.speed = speed;
+    this.direction = player.direction;
+
+    //Spawn
+    var y = (player.rect.top + player.rect.center[1]) / 2;
+
+    if (this.direction > 0) {
+        this.size = [TILE_SIZE, TILE_SIZE];
+        this.rect = new gamejs.Rect([player.rect.right, y], this.size);
+    }
+    else {
+        this.size = [-TILE_SIZE, TILE_SIZE];
+        this.rect = new gamejs.Rect([player.rect.left, y], this.size);
+    }
+
+    this.update = function(dt) {
+
+        //Collision
+        gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(collision) {
+            collision.b.damageBy(collision.a.damage);
+            collision.a.kill();
+        });
+
+        //Movement
+        var x = this.direction * this.speed * dt;
+        if (map.canMove4(this, x, 0)) {
+            map.move(this, x, 0);
+        }
+        else {
+            this.kill();
+        }
+
+        //Disappear
+        this.existingTime += dt;
+        if (this.existingTime >= this.lifeTime) {
+            this.kill();
         }
     };
 }
-gamejs.utils.objects.extend(Weapon, gamejs.sprite.Sprite);
+gamejs.utils.objects.extend(Bullet, Weapon);
 
 function main() {
 
@@ -671,13 +731,6 @@ function spawnEnemy(type, pos) {
     }
     else if (type === ENEMY_TYPES.flying) {
         enemies.add(new FlyingEnemy(1, "enemy_3", pos, 100));
-    }
-}
-
-function spawnWeapon(type) {
-
-    if (type === ITEM_SWORD) {
-        weapons.add(new Weapon(0.2, 1));
     }
 }
 
