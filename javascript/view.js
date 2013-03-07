@@ -38,21 +38,26 @@ var Map = exports.Map = function(url) {
 	this.update = function(dt) {
 
 	};
-	
-	this.drawForeground = function(display) {
+
+    this.drawTiles = function(display) {
 
         layerViews[0].draw(display, offset);
-	};
+    };
 
     this.drawBackground = function (display) {
 
         layerViews[2].draw(display, offset);
-    }
+    };
+	
+	this.drawForeground = function(display) {
+
+        layerViews[3].draw(display, offset);
+	};
 
     this.moveOffset = function(x, y) {
         offset[0] += x;
         offset[1] += y;
-    }
+    };
 
 
     this.getTileIndex = function(pos) {

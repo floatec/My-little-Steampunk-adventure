@@ -401,6 +401,7 @@ function main() {
             map.drawBackground(display);
             player.draw(display);
             enemies.draw(display);
+            map.drawTiles(display);
             map.drawForeground(display);
 
             //Draw overlay
