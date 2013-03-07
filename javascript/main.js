@@ -308,6 +308,7 @@ function Entity(health) {
         this.health -= value;
 
         if (this.health <= 0) {
+            player.kills += 1;
             this.kill();
         }
     }
@@ -382,8 +383,8 @@ function Player(position) {
                     var effect = gamejs.mixer.Sound("./sounds/spring.ogg");
                     effect.play();
                 }
-                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
-                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPLIER:1);
+                this.velocity = -JUMP_IMPULSE * (this.item==ITEM_SPRING ? JUMP_MULTIPLIER : 1);
+                this.velocity = -JUMP_IMPULSE * (this.item==ITEM_SPRING ? JUMP_MULTIPLIER : 1);
 
             }
             else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)&&itemenabled) {
@@ -401,7 +402,7 @@ function Player(position) {
             else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)&&itemenabled) {
                 this.item = ITEM_SPRING;
                 if(player.isAtGround){
-                    this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
+                    this.velocity = -JUMP_IMPULSE * (this.item == ITEM_SPRING ? JUMP_MULTIPLIER : 1);
                 }
                 blockItems();
             }
@@ -448,7 +449,8 @@ function Player(position) {
         this.updatePhysics(dt);
 
         //Collision with enemies
-        gamejs.sprite.spriteCollide(player, enemies, true).forEach(function(collision) {
+        gamejs.sprite.spriteCollide(player, enemies, false).forEach(function(collision) {
+            collision.b.damageBy(10);
             player.damageBy(1);
         });
 
@@ -477,15 +479,11 @@ function Player(position) {
         if (!INVINCIBLE) {
             //this._alive = false;
 
-            console.log(this.lastSave.offset);
-            console.log(map.getOffset());
+            this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
 
             var x = this.lastSave.offset[0] - map.getOffset()[0];
             var y = this.lastSave.offset[1] - map.getOffset()[1];
-            console.log(x, y);
             updateScroll(x, y);
-
-            this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
         }
     }
 }
