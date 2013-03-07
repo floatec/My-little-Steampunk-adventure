@@ -211,11 +211,20 @@ function SplashScreen() {
 }
 gamejs.utils.objects.extend(SplashScreen, gamejs.sprite.Sprite);
 
-function Entity() {
+function Entity(health) {
     Entity.superConstructor.apply(this, arguments);
 
+    this.health = health;
     this.velocity = 0;
     this.isAtGround = false;
+
+    this.damageBy = function(value) {
+        this.health -= value;
+
+        if (this.health < 0) {
+            this.kill();
+        }
+    }
 
     this.updatePhysics = function(dt) {
         this.isAtGround = !map.canMove8(this, 0, 0.01);
@@ -249,7 +258,6 @@ function Player(position) {
     this.xDir = 0;
     this.dir = DIR_RIGHT;
     this.item = ITEM_SWORD;
-    this.alive = true;
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
 
@@ -321,7 +329,7 @@ function Player(position) {
 
         //Kill
         if (!DEBUG && map.hitsKillingObject(this)) {
-            this.alive = false;
+            this.kill();
         }
     };
 }
@@ -339,7 +347,6 @@ function Enemy(imagePath, pos, speed, health) {
 
     this.direction = 1;
     this.speed = speed;
-    this.health = health;
 }
 gamejs.utils.objects.extend(Enemy, Entity);
 
@@ -434,7 +441,7 @@ function main() {
                 menu[i].handle(event);
             }
         });
-        if(!player.alive){
+        if(player.isDead()){
             splashScreen.setGameOver();
         }
 
@@ -452,7 +459,7 @@ function main() {
         //Background
         display.fill("rgba(0,0,0,1)");
 
-        if (splashScreen.showSplash||!player.alive){
+        if (splashScreen.showSplash || player.isDead()){
 
             splashScreen.draw(display);
         }
