@@ -103,6 +103,7 @@ var triggers = [];
 var itemBlockedTimer;
 var itemenabled=true;
 
+
 addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
 addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
@@ -204,6 +205,26 @@ function Info(text){
            gamejs.draw.rect(display, "rgba(255,255,255,1)", this.bg ,0);
            display.blit(this.image, [this.pos[0]+(this.infobox.getSize()[0]/2),this.pos[1]+12])
            display.blit(this.infobox, this.pos)
+
+        }
+    }
+}
+function Hud(){
+
+    this.pos=[SCREEN_WIDTH-120,0];
+    this.existingTime=0;
+
+    this.update = function(dt) {
+
+        this.bg=new gamejs.Rect(this.pos,[120,16]);
+        this.infobox = font.render(" Life: "+player.health+"   Kills: "+player.kills, "rgba(255,255,255,1)");
+    }
+
+    this.draw = function(display) {
+
+        if(this.existingTime <= INFO_TIME){
+            gamejs.draw.rect(display, "rgba(137,137,61,1)", this.bg ,0);
+              display.blit(this.infobox, this.pos)
 
         }
     }
@@ -321,6 +342,7 @@ function Player(position) {
 
     //State variables
     this.health = PLAYER_HEALTH;
+    this.kills = 0;
     this.direction = 0;
     this.move = false;
     this.item = ITEM_SWORD;
@@ -604,6 +626,7 @@ function main() {
     enemies = new gamejs.sprite.Group();
     weapons = new gamejs.sprite.Group();
     infobox = new Info("Hallo, I'm Julia");
+    this.hud = new Hud();
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
     menu = [];
@@ -659,6 +682,7 @@ function main() {
         infobox.update(dt);
         map.update(dt);
         updateScroll();
+        this.hud.update(dt);
     }
 
     function draw() {
@@ -685,6 +709,7 @@ function main() {
             for (i in menu){
                 menu[i].draw(display);
             }
+            this.hud.draw(display);
         }
 
     }
