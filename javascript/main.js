@@ -195,18 +195,18 @@ function Info(text){
     this.infobox = font.render(text, "rgba(0,0,0,1)");
     this.image =  gamejs.image.load("./data/speachbubble.png");
     this.update = function(dt) {
-       this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
+        this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
         this.pos[1] -= 20;
         this.bg=new gamejs.Rect(this.pos,this.infobox.getSize());
-       this.existingTime += dt;
+        this.existingTime += dt;
     }
 
     this.draw = function(display) {
 
         if(this.existingTime <= INFO_TIME){
-           gamejs.draw.rect(display, "rgba(255,255,255,1)", this.bg ,0);
-           display.blit(this.image, [this.pos[0]+(this.infobox.getSize()[0]/2),this.pos[1]+12])
-           display.blit(this.infobox, this.pos)
+            gamejs.draw.rect(display, "rgba(255,255,255,1)", this.bg ,0);
+            display.blit(this.image, [this.pos[0]+(this.infobox.getSize()[0]/2),this.pos[1]+12])
+            display.blit(this.infobox, this.pos)
 
         }
     }
@@ -226,7 +226,7 @@ function Hud(){
 
         if(this.existingTime <= INFO_TIME){
             gamejs.draw.rect(display, "rgba(137,137,61,1)", this.bg ,0);
-              display.blit(this.infobox, this.pos)
+            display.blit(this.infobox, this.pos)
 
         }
     }
