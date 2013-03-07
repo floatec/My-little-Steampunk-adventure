@@ -33,6 +33,7 @@ gamejs.preload([
     './data/pipes.png',
     './data/gameover.png',
     './data/item_disabled.png',
+    './data/bullet.png',
     './sounds/slay.ogg',
     './sounds/spring.ogg'
 ]);
@@ -41,7 +42,7 @@ gamejs.preload([
 WALLHACK = true;
 INVINCIBLE = true;
 ALL_ITEMS = true;
-SHOW_HITBOX = true;
+SHOW_HITBOX = false;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -554,14 +555,6 @@ function Weapon(lifeTime, damage) {
     this.damage = damage;
     this.lifeTime = lifeTime;
     this.existingTime = 0;
-
-    this.draw = function(display) {
-
-        //TODO Show "animation" ?
-        if (this.rect != null && SHOW_HITBOX) {
-            gamejs.draw.rect(display, "rgba(255, 0, 0, 0.5)", this.rect, 0);
-        }
-    };
 }
 gamejs.utils.objects.extend(Weapon, gamejs.sprite.Sprite);
 
@@ -593,25 +586,32 @@ function Sword(lifeTime, damage) {
             this.kill();
         }
     };
+
+    this.draw = function(display) {
+
+        //TODO Show "animation" ?
+        if (this.rect != null && SHOW_HITBOX) {
+            gamejs.draw.rect(display, "rgba(255, 0, 0, 0.5)", this.rect, 0);
+        }
+    };
 }
 gamejs.utils.objects.extend(Sword, Weapon);
 
 function Bullet(lifeTime, damage, speed) {
     Bullet.superConstructor.apply(this, arguments);
 
+    this.image = gamejs.image.load('./data/bullet.png');
+    this.size = this.image.getSize();
+
     this.speed = speed;
     this.direction = player.direction;
 
     //Spawn
-    var y = (player.rect.top + player.rect.center[1]) / 2;
-
     if (this.direction > 0) {
-        this.size = [TILE_SIZE, TILE_SIZE];
-        this.rect = new gamejs.Rect([player.rect.right, y], this.size);
+        this.rect = new gamejs.Rect([player.rect.right, player.rect.center[1]], this.size);
     }
     else {
-        this.size = [-TILE_SIZE, TILE_SIZE];
-        this.rect = new gamejs.Rect([player.rect.left, y], this.size);
+        this.rect = new gamejs.Rect([player.rect.left, player.rect.center[1]], this.size);
     }
 
     this.update = function(dt) {
@@ -636,6 +636,10 @@ function Bullet(lifeTime, damage, speed) {
         if (this.existingTime >= this.lifeTime) {
             this.kill();
         }
+    };
+
+    this.draw = function(display) {
+        display.blit(this.image, this.rect);
     };
 }
 gamejs.utils.objects.extend(Bullet, Weapon);
