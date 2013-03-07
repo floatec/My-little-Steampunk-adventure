@@ -28,6 +28,14 @@ var JUMP_IMPULSE = 15;
 //Player
 var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
+var PLAYER_SPEED = 200;
+
+//Enemies
+var ENEMY_TYPES = {
+    easy : "enemy1",
+    hard : "enemy2",
+    flying : "enemy3"
+}
 
 //Items
 var ITEM_SWORD = "_s";
@@ -213,7 +221,6 @@ function Player(position) {
     this.rect = new gamejs.Rect(position, this.image.getSize());
 
     //State variables
-    this.speed = 200;
     this.xDir = 0;
     this.dir = DIR_RIGHT;
     this.item = ITEM_SWORD;
@@ -272,7 +279,7 @@ function Player(position) {
     this.update = function(dt) {
 
         //Calculate new X
-        var x = this.xDir * this.speed * dt;
+        var x = this.xDir * PLAYER_SPEED * dt;
         map.move(this, x, 0);
 
         //Falling etc.
@@ -328,6 +335,26 @@ function WalkingEnemy(imagePath, pos, speed, health) {
 }
 gamejs.utils.objects.extend(WalkingEnemy, Enemy);
 
+function FlyingEnemy(imagePath, pos, speed, health) {
+
+    FlyingEnemy.superConstructor.apply(this, arguments);
+
+    this.update = function(dt) {
+
+        //Move
+        var x = this.speed * this.direction * dt;
+        if (map.canMove(this, x, 0)) {
+            map.move(this, x, 0);
+        }
+        //Change direction
+        else {
+            this.direction *= -1;
+            this.direction > 0 ? this.image = this.imageR : this.image = this.imageL;
+        }
+    };
+}
+gamejs.utils.objects.extend(FlyingEnemy, Enemy);
+
 function main() {
 
     //Initialize screen
@@ -336,16 +363,6 @@ function main() {
     //Initialize variables
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
-
-    var createEnemy = function(type, pos) {
-
-        if (type === "enemy1") {
-            enemies.add(new WalkingEnemy("enemy_1", pos, 100, 2));
-        }
-        else if (type === "enemy2") {
-            enemies.add(new WalkingEnemy("enemy_2", pos, 150, 1));
-        }
-    };
 
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=false;
@@ -465,6 +482,19 @@ function updateScroll() {
         });
     }
 }
+
+function createEnemy(type, pos) {
+
+    if (type === ENEMY_TYPES.easy) {
+        enemies.add(new WalkingEnemy("enemy_1", pos, 100, 1));
+    }
+    else if (type === ENEMY_TYPES.hard) {
+        enemies.add(new WalkingEnemy("enemy_2", pos, 80, 2));
+    }
+    else if (type === ENEMY_TYPES.flying) {
+        enemies.add(new FlyingEnemy("enemy_3", pos, 100, 1));
+    }
+};
 
 //Start game
 gamejs.ready(main);
