@@ -1,12 +1,37 @@
 var gamejs = require('gamejs');
 var view = require('./view');
 
-gamejs.preload(['./data/tiles.png', './data/player_r_n.png', './data/player_l_n.png', './data/player_r_s.png',
-    './data/player_l_s.png', './data/player_r_g.png', './data/player_l_g.png', './data/player_r_sp.png',
-    './data/player_l_sp.png', './data/enemy_1_l.png', './data/enemy_1_r.png', './data/enemy_2_l.png', './data/enemy_2_r.png',
-    './data/enemy_3_l.png', './data/enemy_3_r.png', './data/hero.png','./data/splash.png',
-    './data/_s.png','./data/_s_a.png', './data/_g_a.png','./data/steam.png','./data/speachbubble.png',
-    './data/_g.png', './data/_sp.png','./data/_sp_a.png', './data/_n.png', './data/box.png','./data/_n_a.png','./data/gameover.png' ]);
+gamejs.preload([
+    './data/tiles.png',
+    './data/player_r_n.png',
+    './data/player_l_n.png',
+    './data/player_r_s.png',
+    './data/player_l_s.png',
+    './data/player_r_g.png',
+    './data/player_l_g.png',
+    './data/player_r_sp.png',
+    './data/player_l_sp.png',
+    './data/enemy_1_l.png',
+    './data/enemy_1_r.png',
+    './data/enemy_2_l.png',
+    './data/enemy_2_r.png',
+    './data/enemy_3_l.png',
+    './data/enemy_3_r.png',
+    './data/hero.png',
+    './data/splash.png',
+    './data/_s.png',
+    './data/_s_a.png',
+    './data/_g_a.png',
+    './data/steam.png',
+    './data/speachbubble.png',
+    './data/_g.png',
+    '/data/_sp.png',
+    './data/_sp_a.png',
+    './data/_n.png',
+    './data/box.png',
+    './data/_n_a.png',
+    './data/gameover.png'
+]);
 
 //Cheats
 var DEBUG = true;
