@@ -395,9 +395,7 @@ function Player(position) {
             }
             else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)&&itemenabled) {
                 this.item = ITEM_SPRING;
-                if(player.isAtGround){
-                    this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
-                }
+
                 blockItems();
             }
             else if (event.key === ITEM_KEYS.none && player.isInInventory(ITEM_NONE)) {
