@@ -38,10 +38,10 @@ gamejs.preload([
 ]);
 
 //Cheats
-var WALLHACK = true;
-var INVINCIBLE = true;
-var ALL_ITEMS = true;
-var SHOW_HITBOX = true;
+WALLHACK = true;
+INVINCIBLE = true;
+ALL_ITEMS = true;
+SHOW_HITBOX = true;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -62,7 +62,7 @@ var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
 var PLAYER_SPEED = 200;
 var PLAYER_HEALTH = 5;
-var JUMP_MULTIPILER = 1.8;
+var JUMP_MULTIPLIER = 1.8;
 
 //Weapons
 var SWORD_TIME = 0.1;
@@ -71,10 +71,11 @@ var GUN_DAMAGE = 1;
 var GUN_SPEED = 300;
 
 //Enemies
-var ENEMY_TYPES = {
-    easy : "enemy1",
-    hard : "enemy2",
-    flying : "enemy3"
+var OBJECT_TYPES = {
+    EnemyEasy : "enemy1",
+    EnemyHard : "enemy2",
+    EnemyFlying : "enemy3",
+    Savepoint : "save"
 }
 
 //Items
@@ -97,6 +98,7 @@ var map;
 var player;
 var enemies;
 var weapons;
+var savepoints;
 var infobox ;
 var menu = [];
 var triggers = [];
@@ -211,18 +213,18 @@ function Info(text){
     this.infobox = font.render(text, "rgba(0,0,0,1)");
     this.image =  gamejs.image.load("./data/speachbubble.png");
     this.update = function(dt) {
-       this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
+        this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
         this.pos[1] -= 20;
         this.bg=new gamejs.Rect(this.pos,this.infobox.getSize());
-       this.existingTime += dt;
+        this.existingTime += dt;
     }
 
     this.draw = function(display) {
 
         if(this.existingTime <= INFO_TIME){
-           gamejs.draw.rect(display, "rgba(255,255,255,1)", this.bg ,0);
-           display.blit(this.image, [this.pos[0]+(this.infobox.getSize()[0]/2),this.pos[1]+12])
-           display.blit(this.infobox, this.pos)
+            gamejs.draw.rect(display, "rgba(255,255,255,1)", this.bg ,0);
+            display.blit(this.image, [this.pos[0]+(this.infobox.getSize()[0]/2),this.pos[1]+12])
+            display.blit(this.infobox, this.pos)
 
         }
     }
@@ -242,7 +244,7 @@ function Hud(){
 
         if(this.existingTime <= INFO_TIME){
             gamejs.draw.rect(display, "rgba(137,137,61,1)", this.bg ,0);
-              display.blit(this.infobox, this.pos)
+            display.blit(this.infobox, this.pos)
 
         }
     }
@@ -324,6 +326,7 @@ function Entity(health) {
         this.health -= value;
 
         if (this.health <= 0) {
+            player.kills += 1;
             this.kill();
         }
     }
@@ -366,6 +369,7 @@ function Player(position) {
     this.item = ITEM_SWORD;
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
+    this.lastSave;
 
     if(ALL_ITEMS){
         this.inventory[ITEM_GUN]=ITEM_GUN;
@@ -397,7 +401,9 @@ function Player(position) {
                     var effect = gamejs.mixer.Sound("./sounds/spring.ogg");
                     effect.play();
                 }
-                this.velocity = -JUMP_IMPULSE*(this.item==ITEM_SPRING?JUMP_MULTIPILER:1);
+                this.velocity = -JUMP_IMPULSE * (this.item==ITEM_SPRING ? JUMP_MULTIPLIER : 1);
+                this.velocity = -JUMP_IMPULSE * (this.item==ITEM_SPRING ? JUMP_MULTIPLIER : 1);
+
             }
             else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)&&itemenabled) {
                 this.item = ITEM_SWORD;
@@ -413,7 +419,6 @@ function Player(position) {
             }
             else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)&&itemenabled) {
                 this.item = ITEM_SPRING;
-
                 blockItems();
             }
             else if (event.key === ITEM_KEYS.none && player.isInInventory(ITEM_NONE)) {
@@ -459,11 +464,9 @@ function Player(position) {
         this.updatePhysics(dt);
 
         //Collision with enemies
-        gamejs.sprite.spriteCollide(player, enemies, true).forEach(function(collision) {
-
-            if (!INVINCIBLE) {
-                player.damageBy(1);
-            }
+        gamejs.sprite.spriteCollide(player, enemies, false).forEach(function(collision) {
+            collision.b.damageBy(10);
+            player.kill();
         });
 
         //TODO Fix for performance
@@ -475,10 +478,33 @@ function Player(position) {
         }
 
         //Kill
-        if (map.hitsKillingObject(this) && !INVINCIBLE) {
+        if (map.hitsKillingObject(this)) {
             this.kill();
         }
+
+        //Save
+        gamejs.sprite.spriteCollide(player, savepoints, false).forEach(function(collision) {
+            collision.b.offset = map.getOffset();
+            player.lastSave = collision.b;
+        });
     };
+
+    this.kill = function() {
+
+        if (!INVINCIBLE) {
+            if (this.health <= 1) {
+                this._alive = false;
+            }
+            else {
+                this.health -= 1;
+                this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
+
+                var x = this.lastSave.offset[0] - map.getOffset()[0];
+                var y = this.lastSave.offset[1] - map.getOffset()[1];
+                updateScroll(x, y);
+            }
+        }
+    }
 }
 gamejs.utils.objects.extend(Player, Entity);
 
@@ -632,6 +658,23 @@ function Bullet(lifeTime, damage, speed) {
 }
 gamejs.utils.objects.extend(Bullet, Weapon);
 
+function Savepoint(pos) {
+    Savepoint.superConstructor.apply(this, arguments);
+
+    this.size = [TILE_SIZE, TILE_SIZE];
+    this.rect = new gamejs.Rect(pos, this.size);
+
+    this.offset = [0, 0];
+
+    this.draw = function(display) {
+
+        if (SHOW_HITBOX) {
+            gamejs.draw.rect(display, "rgba(255, 255, 0, 0.5)", this.rect, 0);
+        }
+    };
+}
+gamejs.utils.objects.extend(Savepoint, gamejs.sprite.Sprite);
+
 function main() {
 
     //Initialize screen
@@ -641,6 +684,7 @@ function main() {
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
     weapons = new gamejs.sprite.Group();
+    savepoints = new gamejs.sprite.Group();
     infobox = new Info("Hallo, I'm Julia");
     this.hud = new Hud();
     var splashScreen = new SplashScreen();
@@ -649,7 +693,7 @@ function main() {
 
     //Initialize map
     map = new view.Map(TMX_FILE);
-    map.loadObjects(spawnEnemy);
+    map.loadObjects(spawnObject);
 
     menu[ITEM_SWORD]=new Item(ITEM_SWORD,[0+5,5],function(event){
         if (event.key === ITEM_KEYS.sword) {
@@ -697,7 +741,7 @@ function main() {
         checkForTrigger();
         infobox.update(dt);
         map.update(dt);
-        updateScroll();
+        updateScroll(0, 0);
         this.hud.update(dt);
     }
 
@@ -717,6 +761,12 @@ function main() {
             player.draw(display);
             enemies.draw(display);
             weapons.draw(display);
+            savepoints.draw(display);
+            if (SHOW_HITBOX) {
+                triggers.forEach(function(trigger) {
+                    gamejs.draw.rect(display, "rgba(0,0,255,0.5)", trigger.rect, 0);
+                })
+            }
             map.drawTiles(display);
             map.drawForeground(display);
 
@@ -731,7 +781,7 @@ function main() {
     }
 }
 
-function updateScroll() {
+function updateScroll(x, y) {
 
     var x = 0;
     var y = 0;
@@ -759,24 +809,27 @@ function updateScroll() {
     }
 
     if (x != 0 || y != 0) {
-
         map.moveOffset(x, y);
         enemies.forEach(function(enemy) { enemy.rect.moveIp(x, y); })
         triggers.forEach(function(trigger) { trigger.rect.moveIp(x, y); });
         weapons.forEach(function(weapon) { weapon.rect.moveIp(x, y); });
+        savepoints.forEach(function (savepoint) { savepoint.rect.moveIp(x, y); });
     }
 }
 
-function spawnEnemy(type, pos) {
+function spawnObject(type, pos) {
 
-    if (type === ENEMY_TYPES.easy) {
+    if (type === OBJECT_TYPES.EnemyEasy) {
         enemies.add(new WalkingEnemy(1, "enemy_1", pos, 100));
     }
-    else if (type === ENEMY_TYPES.hard) {
+    else if (type === OBJECT_TYPES.EnemyHard) {
         enemies.add(new WalkingEnemy(2, "enemy_2", pos, 80));
     }
-    else if (type === ENEMY_TYPES.flying) {
+    else if (type === OBJECT_TYPES.EnemyFlying) {
         enemies.add(new FlyingEnemy(1, "enemy_3", pos, 100));
+    }
+    else if (type === OBJECT_TYPES.Savepoint) {
+        savepoints.add(new Savepoint(pos));
     }
 }
 
