@@ -40,9 +40,9 @@ gamejs.preload([
 
 //Cheats
 WALLHACK = true;
-INVINCIBLE = true;
+INVINCIBLE = false;
 ALL_ITEMS = true;
-SHOW_HITBOX = false;
+SHOW_HITBOX = true;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -486,6 +486,7 @@ function Player(position) {
         //Save
         gamejs.sprite.spriteCollide(player, savepoints, false).forEach(function(collision) {
             collision.b.offset = map.getOffset();
+            collision.b.playerpos = [player.rect.top, player.rect.left]; //"clone"
             player.lastSave = collision.b;
         });
     };
@@ -498,7 +499,8 @@ function Player(position) {
             }
             else {
                 this.health -= 1;
-                this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
+
+                this.rect.topleft = this.lastSave.playerpos;
 
                 var x = this.lastSave.offset[0] - map.getOffset()[0];
                 var y = this.lastSave.offset[1] - map.getOffset()[1];
@@ -669,6 +671,7 @@ function Savepoint(pos) {
     this.rect = new gamejs.Rect(pos, this.size);
 
     this.offset = [0, 0];
+    this.playerpos = [0, 0];
 
     this.draw = function(display) {
 
@@ -786,9 +789,6 @@ function main() {
 }
 
 function updateScroll(x, y) {
-
-    var x = 0;
-    var y = 0;
 
     //Scroll to the right
     if (player.rect.right > SCREEN_WIDTH) {
