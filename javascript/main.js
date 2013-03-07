@@ -104,13 +104,31 @@ var itemBlockedTimer;
 var itemenabled=true;
 
 
+
+
+addTrigger(new gamejs.Rect([(299*TILE_SIZE),31*TILE_SIZE], [32*10,32]),function(){infobox =new Info("OK this Developers a really Mindfucked? can you please let me die fast?");});
+addTrigger(new gamejs.Rect([(288*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){infobox =new Info("Are you kidding me?");});
+addTrigger(new gamejs.Rect([(319*TILE_SIZE),11*TILE_SIZE], [64,64]),function(){
+    infobox = new Info("Ohh yes! A Gun.\n[4]");
+    player.inventory.push(ITEM_GUN);
+    menu[ITEM_GUN] = new Item(ITEM_GUN, [32*3+20,5], function(event) {
+        if (event.key === ITEM_KEYS.gun) {
+            for (i in menu) {
+                menu[i].deactivate();
+            }
+            menu[ITEM_GUN].active();
+
+        }
+    });
+});
 addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
 addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
-addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[A] or [D]");});
+addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[A]");});
+addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall![D]");});
 addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("oh is this high![W]");});
 addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
-    infobox = new Info("Ohh some Springs!\n[2]back[1]");
+    infobox = new Info("Ohh some Springs!\n[2]");
     player.inventory.push(ITEM_SPRING);
     menu[ITEM_SPRING] = new Item(ITEM_SPRING, [32+10,5], function(event) {
         if (event.key === ITEM_KEYS.spring) {
@@ -123,7 +141,7 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
     });
 });
 addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
-    if(menu[ITEM_NONE]==ITEM_NONE){
+    if(menu[ITEM_NONE]===ITEM_NONE){
         infobox = new Info("Ohh lets put our items away[3]");
         player.inventory.push(ITEM_NONE);
         menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
