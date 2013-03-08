@@ -64,6 +64,7 @@ var JUMP_IMPULSE = 15;
 var PLAYER_SPEED = 200;
 var PLAYER_HEALTH = 5;
 var JUMP_MULTIPLIER = 1.8;
+var FREEZE_TIME = 0.2;
 
 //Weapons
 var TIME_OF_ATTACK = 0.1;
@@ -357,6 +358,7 @@ function Player(position) {
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
     this.lastSave = undefined;
+    this.freeze = 0;
 
     if(ALL_ITEMS){
         this.inventory[ITEM_GUN]=ITEM_GUN;
@@ -373,6 +375,13 @@ function Player(position) {
     };
 
     this.handle = function(event) {
+
+        //Cancel movement
+        if (this.freeze > 0) {
+            this.move = false;
+            return;
+        }
+
         if (event.type === gamejs.event.KEY_DOWN) {
             if (event.key === gamejs.event.K_a && !this.move) {
                 this.direction = -1 * (this.item==ITEM_NONE ? 2 : 1);
@@ -442,6 +451,11 @@ function Player(position) {
 
     this.update = function(dt) {
 
+        //Timer
+        if (this.freeze > 0) {
+            this.freeze -= dt;
+        }
+
         //Calculate new X
         if (this.move) {
             var x = this.direction * PLAYER_SPEED * dt;
@@ -486,6 +500,7 @@ function Player(position) {
             }
             else {
                 this.health -= 1;
+                this.freeze = FREEZE_TIME;
                 this.rect.topleft = this.lastSave.playerpos;
 
                 var x = this.lastSave.offset[0] - map.getOffset()[0];
