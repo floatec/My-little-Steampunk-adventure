@@ -61,18 +61,15 @@ var GRAVITY = 2;
 var JUMP_IMPULSE = 15;
 
 //Player
-var DIR_LEFT = "_l";
-var DIR_RIGHT = "_r";
 var PLAYER_SPEED = 200;
 var PLAYER_HEALTH = 5;
 var JUMP_MULTIPLIER = 1.8;
 
 //Weapons
-var SWORD_TIME = 0.1;
+var TIME_OF_ATTACK = 0.1;
 var SWORD_DAMAGE = 2;
 var GUN_DAMAGE = 1;
 var GUN_SPEED = 300;
-var TIME_OF_ATACK=SWORD_TIME;
 
 //Enemies
 var OBJECT_TYPES = {
@@ -111,9 +108,7 @@ var itemenabled=true;
 var atackTime=0;
 var atack=false;
 
-
-
-
+//Trigger
 addTrigger(new gamejs.Rect([(299*TILE_SIZE),31*TILE_SIZE], [32*10,32]),function(){infobox =new Info("OK this Developers a really Mindfucked? can you please let me die fast?");});
 addTrigger(new gamejs.Rect([(288*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){infobox =new Info("Are you kidding me?");});
 addTrigger(new gamejs.Rect([(319*TILE_SIZE),11*TILE_SIZE], [64,64]),function(){
@@ -129,6 +124,7 @@ addTrigger(new gamejs.Rect([(319*TILE_SIZE),11*TILE_SIZE], [64,64]),function(){
         }
     });
 });
+addTrigger(new gamejs.Rect([248*TILE_SIZE,3*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh I'm so fast!!!");});
 addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
 addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
@@ -166,6 +162,7 @@ addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
     }
 
 });
+
 function blockItems(){
     for(i in menu){
         menu[i].disable();
@@ -173,31 +170,13 @@ function blockItems(){
     itemBlockedTimer=0;
     itemenabled=false;
 }
+
 function reactivateItems(){
     for(i in menu){
         menu[i].enable();
     }
     itemenabled=true;
 }
-
-
-addTrigger(new gamejs.Rect([248*TILE_SIZE,3*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh I'm so fast!!!");});
-/*menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
- if (event.key === ITEM_KEYS.gun) {
- for (i in menu) {
- menu[i].deactivate();
- }
- menu[ITEM_GUN].active();
- }
- });
- menu[ITEM_NONE]=new Item(ITEM_NONE,[96+20,5],function(event){
- if (event.key === ITEM_KEYS.none) {
- for (i in menu) {
- menu[i].deactivate();
- }
- menu[ITEM_NONE].active();
- }
- });*/
 
 function addTrigger(rect, callback){
     var obj = { callback:callback, rect:rect };
@@ -236,6 +215,7 @@ function Info(text){
         }
     }
 }
+
 function Hud(){
 
     this.pos=[SCREEN_WIDTH-120,0];
@@ -376,7 +356,7 @@ function Player(position) {
     this.item = ITEM_SWORD;
     this.inventory = [];
     this.inventory.push(ITEM_SWORD);
-    this.lastSave;
+    this.lastSave = undefined;
 
     if(ALL_ITEMS){
         this.inventory[ITEM_GUN]=ITEM_GUN;
@@ -418,7 +398,7 @@ function Player(position) {
                 var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
                 effect.play();
 
-                weapons.add(new Sword(SWORD_TIME, SWORD_DAMAGE));
+                weapons.add(new Sword(TIME_OF_ATTACK, SWORD_DAMAGE));
             }
             else if (event.key === ITEM_KEYS.gun && player.isInInventory(ITEM_GUN)&&itemenabled) {
                 this.item = ITEM_GUN;
@@ -435,7 +415,7 @@ function Player(position) {
             else if (event.key === gamejs.event.K_SPACE) {
 
                 if (player.item === ITEM_SWORD) {
-                    weapons.add(new Sword(SWORD_TIME, SWORD_DAMAGE));
+                    weapons.add(new Sword(TIME_OF_ATTACK, SWORD_DAMAGE));
                     atack=true;
                     atackTime=0;
                     var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
@@ -493,6 +473,7 @@ function Player(position) {
         //Save
         gamejs.sprite.spriteCollide(player, savepoints, false).forEach(function(collision) {
             collision.b.offset = map.getOffset();
+            collision.b.playerpos = [player.rect.left, player.rect.top]; //"clone"
             player.lastSave = collision.b;
         });
     };
@@ -505,7 +486,7 @@ function Player(position) {
             }
             else {
                 this.health -= 1;
-                this.rect.topleft = [this.lastSave.rect.left, this.lastSave.rect.top - TILE_SIZE];
+                this.rect.topleft = this.lastSave.playerpos;
 
                 var x = this.lastSave.offset[0] - map.getOffset()[0];
                 var y = this.lastSave.offset[1] - map.getOffset()[1];
@@ -676,6 +657,7 @@ function Savepoint(pos) {
     this.rect = new gamejs.Rect(pos, this.size);
 
     this.offset = [0, 0];
+    this.playerpos = [0, 0];
 
     this.draw = function(display) {
 
@@ -733,7 +715,7 @@ function main() {
             reactivateItems();
         }
         atackTime+=dt;
-        if(atackTime>=TIME_OF_ATACK){
+        if(atackTime>=TIME_OF_ATTACK){
            atack=false;
         }
 
@@ -798,9 +780,6 @@ function main() {
 }
 
 function updateScroll(x, y) {
-
-    var x = 0;
-    var y = 0;
 
     //Scroll to the right
     if (player.rect.right > SCREEN_WIDTH) {
