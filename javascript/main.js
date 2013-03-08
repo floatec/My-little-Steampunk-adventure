@@ -7,6 +7,8 @@ gamejs.preload([
     './data/player_l_n.png',
     './data/player_r_s.png',
     './data/player_l_s.png',
+    './data/player_r_s_a.png',
+    './data/player_l_s_a.png',
     './data/player_r_g.png',
     './data/player_l_g.png',
     './data/player_r_sp.png',
@@ -39,9 +41,9 @@ gamejs.preload([
 ]);
 
 //Cheats
-WALLHACK = true;
-INVINCIBLE = true;
-ALL_ITEMS = true;
+WALLHACK = false;
+INVINCIBLE = false;
+ALL_ITEMS = false;
 SHOW_HITBOX = false;
 
 //Font
@@ -70,6 +72,7 @@ var SWORD_TIME = 0.1;
 var SWORD_DAMAGE = 2;
 var GUN_DAMAGE = 1;
 var GUN_SPEED = 300;
+var TIME_OF_ATACK=0.2;
 
 //Enemies
 var OBJECT_TYPES = {
@@ -103,8 +106,10 @@ var savepoints;
 var infobox ;
 var menu = [];
 var triggers = [];
-var itemBlockedTimer;
+var itemBlockedTimer=0;
 var itemenabled=true;
+var atackTime=0;
+var atack=false;
 
 
 
@@ -144,7 +149,7 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
     });
 });
 addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
-    if(menu[ITEM_NONE]===ITEM_NONE){
+    /*if(menu[ITEM_NONE]===ITEM_NONE)*/{
         infobox = new Info("Ohh lets put our items away[3]");
         player.inventory.push(ITEM_NONE);
         menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
@@ -174,6 +179,7 @@ function reactivateItems(){
     }
     itemenabled=true;
 }
+
 
 addTrigger(new gamejs.Rect([248*TILE_SIZE,3*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh I'm so fast!!!");});
 /*menu[ITEM_GUN]=new Item(ITEM_GUN,[64+15,5],function(event){
@@ -430,7 +436,8 @@ function Player(position) {
 
                 if (player.item === ITEM_SWORD) {
                     weapons.add(new Sword(SWORD_TIME, SWORD_DAMAGE));
-
+                    atack=true;
+                    atackTime=0;
                     var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
                     effect.play();
                 }
@@ -472,10 +479,10 @@ function Player(position) {
 
         //TODO Fix for performance
         if (player.direction > 0) {
-            this.image = gamejs.image.load('./data/player_r' + this.item + '.png');
+            this.image = gamejs.image.load('./data/player_r' + this.item+(atack&&this.item==ITEM_SWORD?"_a":"") + '.png');
         }
         else {
-            this.image = gamejs.image.load('./data/player_l' + this.item + '.png');
+            this.image = gamejs.image.load('./data/player_l' + this.item +(atack&&this.item==ITEM_SWORD?"_a":"")+ '.png');
         }
 
         //Kill
@@ -725,6 +732,11 @@ function main() {
         if(itemBlockedTimer>=MAX_ITEM_BLOCKTIME&&!itemenabled){
             reactivateItems();
         }
+        atackTime+=dt;
+        if(atackTime>=TIME_OF_ATACK){
+           atack=false;
+        }
+
         //Process input
         gamejs.event.get().forEach(function(event) {
             for (i in menu){
