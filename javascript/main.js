@@ -41,10 +41,10 @@ gamejs.preload([
 ]);
 
 //Cheats
-WALLHACK = false;
+WALLHACK = true;
 INVINCIBLE = false;
-ALL_ITEMS = false;
-SHOW_HITBOX = false;
+ALL_ITEMS = true;
+SHOW_HITBOX = true;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -72,7 +72,7 @@ var SWORD_TIME = 0.1;
 var SWORD_DAMAGE = 2;
 var GUN_DAMAGE = 1;
 var GUN_SPEED = 300;
-var TIME_OF_ATACK=0.2;
+var TIME_OF_ATACK=SWORD_TIME;
 
 //Enemies
 var OBJECT_TYPES = {
