@@ -43,7 +43,7 @@ gamejs.preload([
 //Cheats
 WALLHACK = true;
 INVINCIBLE = false;
-ALL_ITEMS = true;
+ALL_ITEMS = false;
 SHOW_HITBOX = true;
 
 //Font
@@ -64,7 +64,7 @@ var JUMP_IMPULSE = 15;
 var DIR_LEFT = "_l";
 var DIR_RIGHT = "_r";
 var PLAYER_SPEED = 200;
-var PLAYER_HEALTH = 5;
+var PLAYER_HEALTH = 15;
 var JUMP_MULTIPLIER = 1.8;
 
 //Weapons
@@ -113,6 +113,7 @@ var atack=false;
 
 
 
+addTrigger(new gamejs.Rect([(179*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh this guys are havery...");});
 
 addTrigger(new gamejs.Rect([(299*TILE_SIZE),31*TILE_SIZE], [32*10,32]),function(){infobox =new Info("OK this Developers a really Mindfucked? can you please let me die fast?");});
 addTrigger(new gamejs.Rect([(288*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){infobox =new Info("Are you kidding me?");});
@@ -129,6 +130,7 @@ addTrigger(new gamejs.Rect([(319*TILE_SIZE),11*TILE_SIZE], [64,64]),function(){
         }
     });
 });
+addTrigger(new gamejs.Rect([(284*TILE_SIZE),54*TILE_SIZE], [32,32]),function(){if(player.kills==37&&player.health==13){infobox =new Info("YUE ARE SO LEET ...13life 37 kills!");}});
 addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
 addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
@@ -394,16 +396,16 @@ function Player(position) {
 
     this.handle = function(event) {
         if (event.type === gamejs.event.KEY_DOWN) {
-            if (event.key === gamejs.event.K_a && !this.move) {
+            if (event.key === gamejs.event.K_LEFT && !this.move) {
                 this.direction = -1 * (this.item==ITEM_NONE ? 2 : 1);
                 this.move = true;
             }
-            else if (event.key === gamejs.event.K_d && !this.move) {
+            else if (event.key === gamejs.event.K_RIGHT && !this.move) {
                 this.direction = (this.item==ITEM_NONE ? 2 : 1);
                 this.move = true;
             }
 
-            else if (event.key === gamejs.event.K_w && this.isAtGround) {
+            else if (event.key === gamejs.event.K_UP && this.isAtGround) {
                 if(this.item==ITEM_SPRING){
                     var effect = gamejs.mixer.Sound("./sounds/spring.ogg");
                     effect.play();
@@ -415,8 +417,7 @@ function Player(position) {
             else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)&&itemenabled) {
                 this.item = ITEM_SWORD;
                 blockItems()
-                var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
-                effect.play();
+
 
                 weapons.add(new Sword(SWORD_TIME, SWORD_DAMAGE));
             }
@@ -448,15 +449,15 @@ function Player(position) {
 
             //Cheats
             if (WALLHACK) {
-                if (event.key === gamejs.event.K_LEFT) { this.rect.left -= 10; }
-                if (event.key === gamejs.event.K_RIGHT) { this.rect.left += 10; }
-                if (event.key === gamejs.event.K_UP) { this.rect.top -= 100; }
-                if (event.key === gamejs.event.K_DOWN) { this.rect.top += 100; }
+                if (event.key === gamejs.event.K_a) { this.rect.left -= 10; }
+                if (event.key === gamejs.event.K_d) { this.rect.left += 10; }
+                if (event.key === gamejs.event.K_w) { this.rect.top -= 100; }
+                if (event.key === gamejs.event.K_s) { this.rect.top += 100; }
             }
         }
         else if (event.type === gamejs.event.KEY_UP) {
-            if (event.key === gamejs.event.K_a) this.move = false;
-            if (event.key === gamejs.event.K_d) this.move = false;
+            if (event.key === gamejs.event.K_LEFT) this.move = false;
+            if (event.key === gamejs.event.K_RIGHT) this.move = false;
         }
     };
 
