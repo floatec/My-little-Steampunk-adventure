@@ -42,7 +42,7 @@ gamejs.preload([
 
 //Cheats
 WALLHACK = true;
-INVINCIBLE = false;
+INVINCIBLE = true;
 ALL_ITEMS = true;
 SHOW_HITBOX = true;
 
@@ -68,9 +68,10 @@ var FREEZE_TIME = 0.2;
 
 //Weapons
 var TIME_OF_ATTACK = 0.1;
-var SWORD_DAMAGE = 2;
-var GUN_DAMAGE = 1;
+var SWORD_DAMAGE = 1;
+var GUN_DAMAGE = 0.5;
 var GUN_SPEED = 300;
+var PUSH_X = 30;
 
 //Enemies
 var OBJECT_TYPES = {
@@ -352,7 +353,7 @@ function Player(position) {
     //State variables
     this.health = PLAYER_HEALTH;
     this.kills = 0;
-    this.direction = 0;
+    this.direction = 1;
     this.move = false;
     this.item = ITEM_SWORD;
     this.inventory = [];
@@ -524,6 +525,10 @@ function Enemy(health, imagePath, pos, speed) {
 
     this.direction = 1;
     this.speed = speed;
+
+    this.push = function(x, y) {
+        map.move(this, x, y);
+    }
 }
 gamejs.utils.objects.extend(Enemy, Entity);
 
@@ -590,14 +595,21 @@ function Sword(lifeTime, damage) {
             this.rect = new gamejs.Rect(player.rect.topright, this.size);
         }
         else {
-            this.size = [-TILE_SIZE * 2, TILE_SIZE * 2];
-            this.rect = new gamejs.Rect(player.rect.topleft, this.size);
+            this.size = [TILE_SIZE * 2, TILE_SIZE * 2];
+            this.rect = new gamejs.Rect([player.rect.left - this.size[0], player.rect.top], this.size);
         }
 
         //Only hit once
         if (this.existingTime == 0) {
             gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(collision) {
                 collision.b.damageBy(collision.a.damage);
+
+                if (player.direction > 0) {
+                    collision.b.push(PUSH_X, 0);
+                }
+                else {
+                    collision.b.push(PUSH_X, 0);
+                }
             });
         }
 
@@ -641,6 +653,13 @@ function Bullet(lifeTime, damage, speed) {
         gamejs.sprite.spriteCollide(this, enemies, false).forEach(function(collision) {
             collision.b.damageBy(collision.a.damage);
             collision.a.kill();
+
+            if (player.direction > 0) {
+                collision.b.push(PUSH_X / 2, 0);
+            }
+            else {
+                collision.b.push(PUSH_X / 2, 0);
+            }
         });
 
         //Movement
