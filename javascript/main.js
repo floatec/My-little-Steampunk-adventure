@@ -136,8 +136,8 @@ addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){in
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
 addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
 addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[A]");});
-addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall![D]");});
-addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("oh is this high![W]");});
+addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall![RIGHT]");});
+addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("oh is this high![LEFT]");});
 addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
     infobox = new Info("Ohh some Springs!\n[2]");
     player.inventory.push(ITEM_SPRING);
