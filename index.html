@@ -12,7 +12,7 @@
         require.run('main')
 	</script>
 	<style type="text/css">
-		canvas { border: 1px solid black; }
+
 	</style>
 </head>
 <body style="color: #cccd67;background-image: url(./img/Steampunk_Wallpaper_by_MyScarredHeart.jpg)">
@@ -23,13 +23,15 @@
     <div style="position:absolute;
 	top: 50%;
 	left: 50%;
+	min-width: 800px;
 	margin-top: -240px; /*set to a negative number 1/2 of your height*/
 	margin-left: -400px; /*set to a negative number 1/2 of your width*/
 	text-align:center;">
-        <div id="gjs-loader">
+        <div id="gjs-loader" style="color:#08f7ff;background-color: black;height: 480px">
+            <br><br><br><img src="img/LoadingCircle.gif" width="150px"/><br>
 			Loading...
         </div>
-        <canvas  id="gjs-canvas">
+        <canvas  id="gjs-canvas" style="min-height: 5px">
 			No HTML5 supported?
 		</canvas>
         <br>Gamejam II | by Marius Musch & Patrick M&uuml;ller |
