@@ -41,10 +41,10 @@ gamejs.preload([
 ]);
 
 //Cheats
-WALLHACK = true;
-INVINCIBLE = true;
-ALL_ITEMS = true;
-SHOW_HITBOX = true;
+WALLHACK = false;
+INVINCIBLE = false;
+ALL_ITEMS = false;
+SHOW_HITBOX = false;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
@@ -130,7 +130,7 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
         }
     });
 });
-addTrigger(new gamejs.Rect([(179*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("This guys look heavy");});
+addTrigger(new gamejs.Rect([(179*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("These guys look heavy");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame... this box is empty :(");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
         infobox = new Info("Wait, now I can put my items away [3]");
@@ -605,7 +605,7 @@ function Sword(lifeTime, damage) {
                     collision.b.push(PUSH_X, 0);
                 }
                 else {
-                    collision.b.push(PUSH_X, 0);
+                    collision.b.push(-PUSH_X, 0);
                 }
             });
         }
@@ -712,7 +712,7 @@ function main() {
     infobox = new Info("Hallo, I'm Julia");
     this.hud = new Hud();
     var splashScreen = new SplashScreen();
-    splashScreen.showSplash=false;
+    splashScreen.showSplash=true;
     menu = [];
 
     //Initialize map
