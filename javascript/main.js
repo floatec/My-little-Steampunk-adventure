@@ -42,8 +42,8 @@ gamejs.preload([
 
 //Cheats
 WALLHACK = true;
-INVINCIBLE = false;
-ALL_ITEMS = false;
+INVINCIBLE = true;
+ALL_ITEMS = true;
 SHOW_HITBOX = true;
 
 //Font
@@ -111,33 +111,12 @@ var atackTime=0;
 var atack=false;
 
 //Trigger
-
-
-addTrigger(new gamejs.Rect([(179*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh this guys are havery...");});
-
-addTrigger(new gamejs.Rect([(299*TILE_SIZE),31*TILE_SIZE], [32*10,32]),function(){infobox =new Info("OK this Developers a really Mindfucked? can you please let me die fast?");});
-addTrigger(new gamejs.Rect([(288*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){infobox =new Info("Are you kidding me?");});
-addTrigger(new gamejs.Rect([(319*TILE_SIZE),11*TILE_SIZE], [64,64]),function(){
-    infobox = new Info("Ohh yes! A Gun.\n[4]");
-    player.inventory.push(ITEM_GUN);
-    menu[ITEM_GUN] = new Item(ITEM_GUN, [32*3+20,5], function(event) {
-        if (event.key === ITEM_KEYS.gun) {
-            for (i in menu) {
-                menu[i].deactivate();
-            }
-            menu[ITEM_GUN].active();
-
-        }
-    });
-});
-addTrigger(new gamejs.Rect([(284*TILE_SIZE),54*TILE_SIZE], [32,32]),function(){if(player.kills==37&&player.health==13){infobox =new Info("YUE ARE SO LEET ...13life 37 kills!");}});
-addTrigger(new gamejs.Rect([248*TILE_SIZE,3*TILE_SIZE], [32,32]),function(){infobox =new Info("Oh I'm so fast!!!");});
+addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[Press LEFT]");});
+addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall! [RIGHT]");});
+addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Oh is this high! [UP]");});
+addTrigger(new gamejs.Rect([(70*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("Some strange guys?!");});
+addTrigger(new gamejs.Rect([(87*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("Let's cut them up with my sword! [SPACE]");});
 addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
-addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
-addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
-addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[A]");});
-addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall![RIGHT]");});
-addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("oh is this high![LEFT]");});
 addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
     infobox = new Info("Ohh some Springs!\n[2]");
     player.inventory.push(ITEM_SPRING);
@@ -151,9 +130,10 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
         }
     });
 });
-addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
-    /*if(menu[ITEM_NONE]===ITEM_NONE)*/{
-        infobox = new Info("Ohh lets put our items away[3]");
+addTrigger(new gamejs.Rect([(179*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("This guys look heavy");});
+addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame... this box is empty :(");});
+addTrigger(new gamejs.Rect([(235*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
+        infobox = new Info("Wait, now I can put my items away [3]");
         player.inventory.push(ITEM_NONE);
         menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
             if (event.key === ITEM_KEYS.none) {
@@ -166,9 +146,23 @@ addTrigger(new gamejs.Rect([(236*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
         });
         player.item=ITEM_NONE;
         menu[ITEM_NONE].active();
-    }
-
 });
+addTrigger(new gamejs.Rect([256*TILE_SIZE,2*TILE_SIZE], [32,32]),function(){infobox =new Info("Wow I'm like so fast!!!");});
+addTrigger(new gamejs.Rect([(319*TILE_SIZE),11*TILE_SIZE], [64,64]),function(){ infobox = new Info("Ohh yes! A gun. [4]");
+    player.inventory.push(ITEM_GUN);
+    menu[ITEM_GUN] = new Item(ITEM_GUN, [32*3+20,5], function(event) {
+        if (event.key === ITEM_KEYS.gun) {
+            for (i in menu) {
+                menu[i].deactivate();
+            }
+            menu[ITEM_GUN].active();
+
+        }
+    });
+});
+addTrigger(new gamejs.Rect([(288*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){infobox =new Info("Are you kidding me?");});
+addTrigger(new gamejs.Rect([(299*TILE_SIZE),31*TILE_SIZE], [32*10,32]),function(){infobox =new Info("Have the developers gone crazy or what?");});
+addTrigger(new gamejs.Rect([(284*TILE_SIZE),54*TILE_SIZE], [32,32]),function(){if(player.kills==37&&player.health==13){infobox =new Info("YOU ARE SO LEET... 13 lifes 37 kills!");}});
 
 function blockItems(){
     for(i in menu){
