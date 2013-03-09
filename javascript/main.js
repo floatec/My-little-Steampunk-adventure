@@ -1,43 +1,59 @@
 var gamejs = require('gamejs');
 var view = require('./view');
 
+PATH = {
+    IMG : './data/img/',
+    SFX : './data/sfx/',
+    TMX : './data/tmx/'
+}
+
 gamejs.preload([
-    './data/tiles.png',
-    './data/player_r_n.png',
-    './data/player_l_n.png',
-    './data/player_r_s.png',
-    './data/player_l_s.png',
-    './data/player_r_s_a.png',
-    './data/player_l_s_a.png',
-    './data/player_r_g.png',
-    './data/player_l_g.png',
-    './data/player_r_sp.png',
-    './data/player_l_sp.png',
-    './data/enemy_1_l.png',
-    './data/enemy_1_r.png',
-    './data/enemy_2_l.png',
-    './data/enemy_2_r.png',
-    './data/enemy_3_l.png',
-    './data/enemy_3_r.png',
-    './data/hero.png',
-    './data/splash.png',
-    './data/_s.png',
-    './data/_s_a.png',
-    './data/_g_a.png',
-    './data/steam.png',
-    './data/speachbubble.png',
-    './data/_g.png',
-    './data/_sp.png',
-    './data/_sp_a.png',
-    './data/_n.png',
-    './data/box.png',
-    './data/_n_a.png',
-    './data/pipes.png',
-    './data/gameover.png',
-    './data/item_disabled.png',
-    './data/bullet.png',
-    './sounds/slay.ogg',
-    './sounds/spring.ogg'
+
+    //Entities
+    PATH.IMG + 'player_r_n.png',
+    PATH.IMG + 'player_l_n.png',
+    PATH.IMG + 'player_r_s.png',
+    PATH.IMG + 'player_l_s.png',
+    PATH.IMG + 'player_r_s_a.png',
+    PATH.IMG + 'player_l_s_a.png',
+    PATH.IMG + 'player_r_g.png',
+    PATH.IMG + 'player_l_g.png',
+    PATH.IMG + 'player_r_sp.png',
+    PATH.IMG + 'player_l_sp.png',
+    PATH.IMG + 'enemy_1_l.png',
+    PATH.IMG + 'enemy_1_r.png',
+    PATH.IMG + 'enemy_2_l.png',
+    PATH.IMG + 'enemy_2_r.png',
+    PATH.IMG + 'enemy_3_l.png',
+    PATH.IMG + 'enemy_3_r.png',
+
+    //Items
+    PATH.IMG + '_s.png',
+    PATH.IMG + '_s_a.png',
+    PATH.IMG + '_g.png',
+    PATH.IMG + '_g_a.png',
+    PATH.IMG + '_sp.png',
+    PATH.IMG + '_sp_a.png',
+    PATH.IMG + '_n.png',
+    PATH.IMG + '_n_a.png',
+    PATH.IMG + 'item_disabled.png',
+
+    //Misc
+    PATH.IMG + 'bullet.png',
+    PATH.IMG + 'splash.png',
+    PATH.IMG + 'gameover.png',
+    PATH.IMG + 'speachbubble.png',
+
+    //Sounds
+    PATH.SFX + 'slay.ogg',
+    PATH.SFX + 'spring.ogg',
+
+    //Map
+    PATH.TMX + 'box.png',
+    PATH.TMX + 'hero.png',
+    PATH.TMX + 'pipes.png',
+    PATH.TMX + 'steam.png',
+    PATH.TMX + 'tiles.png'
 ]);
 
 //Cheats
@@ -54,7 +70,7 @@ var SCREEN_WIDTH = 800;
 var SCREEN_HEIGHT = 480;
 var TILE_SIZE = 16;
 var CAMERA_MOVE_OFFSET = 32;
-var TMX_FILE = './data/testlevel1.tmx';
+var TMX_FILE = PATH.TMX + 'testlevel1.tmx';
 
 //Physics
 var GRAVITY = 2;
@@ -102,26 +118,21 @@ var player;
 var enemies;
 var weapons;
 var savepoints;
-var infobox ;
+var infobox;
 var menu = [];
 var triggers = [];
-var itemBlockedTimer=0;
-var itemenabled=true;
-var atackTime=0;
-var atack=false;
+var itemBlockedTimer = 0;
+var itemEnabled = true;
+var attackTime = 0;
+var attack = false;
 
 //Trigger
-addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[Press LEFT]");});
+addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go? [LEFT]");});
 addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall! [RIGHT]");});
 addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Oh is this high! [UP]");});
 addTrigger(new gamejs.Rect([(70*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("Some strange guys?!");});
 addTrigger(new gamejs.Rect([(87*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("Let's cut them up with my sword! [SPACE]");});
 addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
-addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame...this box is empty...");});
-addTrigger(new gamejs.Rect([(88*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("OHH! Some strange guys?! than I will use my Sword[SPACE]");});
-addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go?[A]");});
-addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall![RIGHT]");});
-addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("oh is this high![LEFT]");});
 addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
     infobox = new Info("Ohh some Springs!\n[2]");
     player.inventory.push(ITEM_SPRING);
@@ -138,19 +149,19 @@ addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
 addTrigger(new gamejs.Rect([(179*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("These guys look heavy");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),24*TILE_SIZE], [64,64]),function(){infobox =new Info("So lame... this box is empty :(");});
 addTrigger(new gamejs.Rect([(235*TILE_SIZE),3*TILE_SIZE], [32,32]),function(){
-        infobox = new Info("Wait, now I can put my items away [3]");
-        player.inventory.push(ITEM_NONE);
-        menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
-            if (event.key === ITEM_KEYS.none) {
-                for (i in menu) {
-                    menu[i].deactivate();
-                }
-                menu[ITEM_NONE].active();
-
+    infobox = new Info("Wait, now I can put my items away [3]");
+    player.inventory.push(ITEM_NONE);
+    menu[ITEM_NONE] = new Item(ITEM_NONE, [64+15,5], function(event) {
+        if (event.key === ITEM_KEYS.none) {
+            for (i in menu) {
+                menu[i].deactivate();
             }
-        });
-        player.item=ITEM_NONE;
-        menu[ITEM_NONE].active();
+            menu[ITEM_NONE].active();
+
+        }
+    });
+    player.item=ITEM_NONE;
+    menu[ITEM_NONE].active();
 });
 addTrigger(new gamejs.Rect([256*TILE_SIZE,2*TILE_SIZE], [32,32]),function(){infobox =new Info("Wow I'm like so fast!!!");});
 addTrigger(new gamejs.Rect([(319*TILE_SIZE),11*TILE_SIZE], [64,64]),function(){ infobox = new Info("Ohh yes! A gun. [4]");
@@ -174,14 +185,14 @@ function blockItems(){
         menu[i].disable();
     }
     itemBlockedTimer=0;
-    itemenabled=false;
+    itemEnabled=false;
 }
 
 function reactivateItems(){
     for(i in menu){
         menu[i].enable();
     }
-    itemenabled=true;
+    itemEnabled=true;
 }
 
 function addTrigger(rect, callback){
@@ -203,7 +214,7 @@ function Info(text){
     this.pos=[0,0];
     this.existingTime=0;
     this.infobox = font.render(text, "rgba(0,0,0,1)");
-    this.image =  gamejs.image.load("./data/speachbubble.png");
+    this.image =  gamejs.image.load(PATH.IMG + "speachbubble.png");
     this.update = function(dt) {
         this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
         this.pos[1] -= 20;
@@ -246,19 +257,19 @@ function Hud(){
 function Item(name,position,handle) {
     this.active = false;
     this.name = name;
-    this.currentState=gamejs.image.load("./data/" + name + ".png");
+    this.currentState=gamejs.image.load(PATH.IMG + name + ".png");
     Item.superConstructor.apply(this, arguments);
 
-    this.image = gamejs.image.load("./data/" + name + ".png");
+    this.image = gamejs.image.load(PATH.IMG + name + ".png");
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect(position, this.size);
 
     this.active = function() {
-        this.image = gamejs.image.load("./data/" + this.name + ITEM_ACTIVATED + ".png");
+        this.image = gamejs.image.load(PATH.IMG + this.name + ITEM_ACTIVATED + ".png");
     }
 
     this.deactivate = function() {
-        this.image = gamejs.image.load("./data/" + this.name + ".png");
+        this.image = gamejs.image.load(PATH.IMG + this.name + ".png");
     }
     this.enable = function() {
         this.image = this.currentState;
@@ -266,7 +277,7 @@ function Item(name,position,handle) {
 
     this.disable = function() {
         this.currentState=this.image
-        this.image = gamejs.image.load("./data/item_disabled.png");
+        this.image = gamejs.image.load(PATH.IMG + "item_disabled.png");
     }
 
     this.update = function(dt) {
@@ -281,14 +292,14 @@ function SplashScreen() {
     this.showSplash=true;
     SplashScreen.superConstructor.apply(this, arguments);
 
-    this.image = gamejs.image.load("./data/splash.png");
+    this.image = gamejs.image.load(PATH.IMG + "splash.png");
     this.size = this.image.getSize();
     this.rect = new gamejs.Rect([0,0], this.size);
     this.gameover = false;
 
     this.setGameOver = function() {
         this.gameover = true;
-        this.image = gamejs.image.load("./data/gameover.png");
+        this.image = gamejs.image.load(PATH.IMG  + "gameover.png");
     };
 
     this.update = function(dt) {
@@ -351,7 +362,7 @@ gamejs.utils.objects.extend(Entity, gamejs.sprite.Sprite);
 function Player(position) {
     Player.superConstructor.apply(this, arguments);
 
-    this.image = gamejs.image.load('./data/player_r_n.png');
+    this.image = gamejs.image.load(PATH.IMG + "player_r_n.png");
     this.rect = new gamejs.Rect(position, this.image.getSize());
 
     //State variables
@@ -406,17 +417,17 @@ function Player(position) {
                 this.velocity = -JUMP_IMPULSE * (this.item==ITEM_SPRING ? JUMP_MULTIPLIER : 1);
 
             }
-            else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)&&itemenabled) {
+            else if (event.key === ITEM_KEYS.sword && player.isInInventory(ITEM_SWORD)&&itemEnabled) {
                 this.item = ITEM_SWORD;
                 blockItems()
 
  
             }
-            else if (event.key === ITEM_KEYS.gun && player.isInInventory(ITEM_GUN)&&itemenabled) {
+            else if (event.key === ITEM_KEYS.gun && player.isInInventory(ITEM_GUN)&&itemEnabled) {
                 this.item = ITEM_GUN;
                 blockItems();
             }
-            else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)&&itemenabled) {
+            else if (event.key === ITEM_KEYS.spring && player.isInInventory(ITEM_SPRING)&&itemEnabled) {
                 this.item = ITEM_SPRING;
                 blockItems();
             }
@@ -428,9 +439,9 @@ function Player(position) {
 
                 if (player.item === ITEM_SWORD) {
                     weapons.add(new Sword(TIME_OF_ATTACK, SWORD_DAMAGE));
-                    atack=true;
-                    atackTime=0;
-                    var effect = gamejs.mixer.Sound("./sounds/slay.ogg");
+                    attack=true;
+                    attackTime=0;
+                    var effect = gamejs.mixer.Sound(PATH.SFX + "slay.ogg");
                     effect.play();
                 }
                 else if (player.item === ITEM_GUN) {
@@ -476,10 +487,10 @@ function Player(position) {
 
         //TODO Fix for performance
         if (player.direction > 0) {
-            this.image = gamejs.image.load('./data/player_r' + this.item+(atack&&this.item==ITEM_SWORD?"_a":"") + '.png');
+            this.image = gamejs.image.load(PATH.IMG + "player_r" + this.item+(attack&&this.item==ITEM_SWORD?"_a":"") + ".png");
         }
         else {
-            this.image = gamejs.image.load('./data/player_l' + this.item +(atack&&this.item==ITEM_SWORD?"_a":"")+ '.png');
+            this.image = gamejs.image.load(PATH.IMG + "player_l" + this.item +(attack&&this.item==ITEM_SWORD?"_a":"")+ ".png");
         }
 
         //Kill
@@ -518,8 +529,8 @@ gamejs.utils.objects.extend(Player, Entity);
 function Enemy(health, imagePath, pos, speed) {
     Enemy.superConstructor.apply(this, arguments);
 
-    this.imageR = gamejs.image.load('./data/' + imagePath + '_r.png');
-    this.imageL = gamejs.image.load('./data/' + imagePath + '_l.png')
+    this.imageR = gamejs.image.load(PATH.IMG + imagePath + '_r.png');
+    this.imageL = gamejs.image.load(PATH.IMG + imagePath + '_l.png');
     this.image = this.imageR;
 
     this.size = this.image.getSize();
@@ -635,7 +646,7 @@ gamejs.utils.objects.extend(Sword, Weapon);
 function Bullet(lifeTime, damage, speed) {
     Bullet.superConstructor.apply(this, arguments);
 
-    this.image = gamejs.image.load('./data/bullet.png');
+    this.image = gamejs.image.load(PATH.IMG + "bullet.png");
     this.size = this.image.getSize();
 
     this.speed = speed;
@@ -747,12 +758,12 @@ function main() {
 
         var dt = gameTime / 1000;
         itemBlockedTimer+=dt;
-        if(itemBlockedTimer>=MAX_ITEM_BLOCKTIME&&!itemenabled){
+        if(itemBlockedTimer>=MAX_ITEM_BLOCKTIME&&!itemEnabled){
             reactivateItems();
         }
-        atackTime+=dt;
-        if(atackTime>=TIME_OF_ATTACK){
-           atack=false;
+        attackTime+=dt;
+        if(attackTime>=TIME_OF_ATTACK){
+           attack=false;
         }
 
         //Process input
