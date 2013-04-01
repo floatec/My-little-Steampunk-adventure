@@ -47,6 +47,11 @@ gamejs.preload([
     //Sounds
     PATH.SFX + 'slay.ogg',
     PATH.SFX + 'spring.ogg',
+    PATH.SFX + 'deathh.ogg',
+
+    //Music
+    PATH.SFX + '8-BitNinja.ogg',//ingame music
+    //PATH.SFX + 'dop.ogg',//splashscreen music
 
     //Map
     PATH.TMX + 'box.png',
@@ -64,6 +69,7 @@ SHOW_HITBOX = false;
 
 //Font
 var font = new gamejs.font.Font("12px Verdana");
+var font20 = new gamejs.font.Font("20px Verdana");
 
 //Level
 var SCREEN_WIDTH = 800;
@@ -80,7 +86,7 @@ var JUMP_IMPULSE = 15;
 var PLAYER_SPEED = 200;
 var PLAYER_HEALTH = 15;
 var JUMP_MULTIPLIER = 1.8;
-var FREEZE_TIME = 0.2;
+var FREEZE_TIME = 1;
 
 //Weapons
 var TIME_OF_ATTACK = 0.1;
@@ -119,6 +125,7 @@ var enemies;
 var weapons;
 var savepoints;
 var infobox;
+var alertbox;
 var menu = [];
 var triggers = [];
 var itemBlockedTimer = 0;
@@ -127,12 +134,12 @@ var attackTime = 0;
 var attack = false;
 
 //Trigger
-addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go? [LEFT]");});
-addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall! [RIGHT]");});
-addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Oh is this high! [UP]");});
-addTrigger(new gamejs.Rect([(70*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("Some strange guys?!");});
-addTrigger(new gamejs.Rect([(87*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("Let's cut them up with my sword! [SPACE]");});
-addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...");});
+addTrigger(new gamejs.Rect([96,192], [32,32]),function(){infobox =new Info("Where should I go? [LEFT]",INFO_TIME);});
+addTrigger(new gamejs.Rect([TILE_SIZE*3,192], [32,32]),function(){infobox =new Info("Are you stupid? There is a Wall! [RIGHT]",INFO_TIME);});
+addTrigger(new gamejs.Rect([(8*3*TILE_SIZE),192], [32,32]),function(){infobox =new Info("Oh is this high! [UP]",INFO_TIME);});
+addTrigger(new gamejs.Rect([(70*TILE_SIZE),13*TILE_SIZE], [32,32]),function(){infobox =new Info("Some strange guys?!",INFO_TIME);});
+addTrigger(new gamejs.Rect([(87*TILE_SIZE),11*TILE_SIZE], [32,32]),function(){infobox =new Info("Let's cut them up with my sword! [SPACE]",INFO_TIME);});
+addTrigger(new gamejs.Rect([(144*TILE_SIZE),7*TILE_SIZE], [32,32]),function(){infobox =new Info("I hate that steam...",INFO_TIME);});
 addTrigger(new gamejs.Rect([(124*TILE_SIZE),23*TILE_SIZE], [32,32]),function(){
     infobox = new Info("Ohh some Springs!\n[2]");
     player.inventory.push(ITEM_SPRING);
@@ -209,11 +216,20 @@ function checkForTrigger() {
     });
 }
 
-function Info(text){
+
+function Info(text,time,fonttype){
+    if(time==undefined){
+        time=INFO_TIME;
+    }
+    if(fonttype==undefined){
+        this.font=font;
+    }else{
+        this.font=fonttype;
+    }
 
     this.pos=[0,0];
-    this.existingTime=0;
-    this.infobox = font.render(text, "rgba(0,0,0,1)");
+    this.existingTime=INFO_TIME-time;
+    this.infobox = this.font.render(text, "rgba(0,0,0,1)");
     this.image =  gamejs.image.load(PATH.IMG + "speachbubble.png");
     this.update = function(dt) {
         this.pos=[player.rect.left+16-(this.infobox.getSize()[0]/2),player.rect.top];
@@ -230,6 +246,9 @@ function Info(text){
             display.blit(this.infobox, this.pos)
 
         }
+    }
+    this.setText=function(text){
+        this.infobox = this.font.render(text, "rgba(0,0,0,1)");
     }
 }
 
@@ -309,7 +328,13 @@ function SplashScreen() {
     this.handle = function(event) {
 
         if (event.type === gamejs.event.MOUSE_DOWN) {
-            this.showSplash=false;
+            if(this.showSplash){
+                this.showSplash=false;
+                var music = gamejs.mixer.Sound(PATH.SFX+"8-BitNinja.ogg");
+                music.setVolume(0.5);
+                music.play(true);
+            }
+
             if (this.gameover) {
                 window.location.reload();
             }
@@ -410,7 +435,8 @@ function Player(position) {
 
             else if (event.key === gamejs.event.K_UP && this.isAtGround) {
                 if(this.item==ITEM_SPRING){
-                    var effect = gamejs.mixer.Sound("./sounds/spring.ogg");
+                    var effect = gamejs.mixer.Sound(PATH.SFX + "spring.ogg");
+                    effect.setVolume(0.6);
                     effect.play();
                 }
                 this.velocity = -JUMP_IMPULSE * (this.item==ITEM_SPRING ? JUMP_MULTIPLIER : 1);
@@ -442,7 +468,9 @@ function Player(position) {
                     attack=true;
                     attackTime=0;
                     var effect = gamejs.mixer.Sound(PATH.SFX + "slay.ogg");
+                    effect.setVolume(0.4);
                     effect.play();
+                   // effect.setVolume(1);
                 }
                 else if (player.item === ITEM_GUN) {
                     weapons.add(new Bullet(10, GUN_DAMAGE, GUN_SPEED));
@@ -514,6 +542,7 @@ function Player(position) {
             }
             else {
                 this.health -= 1;
+                alertbox=new Info("try it again",FREEZE_TIME,font20);
                 this.freeze = FREEZE_TIME;
                 this.rect.topleft = this.lastSave.playerpos;
 
@@ -618,9 +647,15 @@ function Sword(lifeTime, damage) {
                 collision.b.damageBy(collision.a.damage);
 
                 if (player.direction > 0) {
+                    var effect = gamejs.mixer.Sound(PATH.SFX + "deathh.ogg");
+                    effect.setVolume(1);
+                    effect.play();
                     collision.b.push(PUSH_X, 0);
                 }
                 else {
+                    var effect = gamejs.mixer.Sound(PATH.SFX + "deathh.ogg");
+                    effect.setVolume(1);
+                    effect.play();
                     collision.b.push(-PUSH_X, 0);
                 }
             });
@@ -719,13 +754,17 @@ function main() {
 
     //Initialize screen
     var display = gamejs.display.setMode([SCREEN_WIDTH, SCREEN_HEIGHT]);
-
+    //Initializing music
+    //music = gamejs.mixer.Sound(PATH.SFX+"dop.ogg");
+    //music.setVolume(0.5);
+    //music.play(true);
     //Initialize variables
     player = new Player([96, 48]);
     enemies = new gamejs.sprite.Group();
     weapons = new gamejs.sprite.Group();
     savepoints = new gamejs.sprite.Group();
-    infobox = new Info("Hallo, I'm Julia");
+    infobox = new Info("Hallo, I'm Julia",INFO_TIME);
+    alertbox = new Info("Hallo, I'm Julia",0);
     this.hud = new Hud();
     var splashScreen = new SplashScreen();
     splashScreen.showSplash=true;
@@ -785,6 +824,7 @@ function main() {
         enemies.update(dt);
         checkForTrigger();
         infobox.update(dt);
+        alertbox.update(dt);
         map.update(dt);
         updateScroll(0, 0);
         this.hud.update(dt);
@@ -817,6 +857,7 @@ function main() {
 
             //Draw overlay
             infobox.draw(display);
+            alertbox.draw(display);
             for (i in menu){
                 menu[i].draw(display);
             }
